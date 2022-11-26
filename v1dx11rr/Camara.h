@@ -31,10 +31,10 @@ public:
 		posCam = eye;
 
 		//posición de la cámara en tercera persona
-		
 		posCam3P = eye;
-		posCam3P.z += 0;
-		posCam3P.x += 0;
+		posCam3P.z += 15;
+		posCam3P.y += 1;
+
 
 		//a donde ve
 		hdveo = target;
@@ -63,7 +63,7 @@ public:
 	D3DXMATRIX UpdateCam(float vel, float arriaba, float izqder, bool camaraTipo)
 	{
 		//Para que no nos de problema la cámara
-		D3DXMATRIX vistaPrev = vista; 
+		D3DXMATRIX vistaPrev = vista;
 		D3DXMatrixTranslation(&vista, 0, 0, 0);
 
 
@@ -73,7 +73,7 @@ public:
 		D3DXMATRIX giraUp, giraRight; //matrices temporales para los giros
 
 		//creamos al quaternion segun el vector up
-		D3DXQuaternionRotationAxis(&quatern, &refUp, izqder); 
+		D3DXQuaternionRotationAxis(&quatern, &refUp, izqder);
 		//lo normalizamos para que no acumule error
 		D3DXQuaternionNormalize(&quatern, &quatern);
 		//creamos la matriz de rotacion basados en el quaternion
@@ -97,28 +97,38 @@ public:
 		D3DXVec3Transform(&tempo, &refFront, &giraRight);
 		refFront = (D3DXVECTOR3)tempo;
 		D3DXVec3Normalize(&refFront, &refFront);
-		
+
 		rotacion = giraRight;
 
 
 		//ajustamos la matriz de vista con lo obtenido
-		posCam += refFront * vel/10.0;
+		posCam += refFront * vel / 10.0;
 
 		//calcular tercera persona
 		posCam3P += refFront * vel / 10.0;
 
-
 		if (camaraTipo) {
 			//Primera Persona
 			hdveo = posCam + refFront;
-			D3DXMatrixLookAtLH(&vistaPrev, &posCam, &hdveo, &refUp);
+			D3DXMatrixLookAtLH(&vistaPrev, &posCam, &hdveo, &refUp); //VISTAPREV ES DONDE ESTA LA MATRIZ DE VISTA EN ESE MOMENTO
 		}
-		else
-		{
+		else {
 			//Tercera Persona
-			hdveo = posCam3P + refFront;
-			D3DXMatrixLookAtLH(&vistaPrev, &posCam3P, &hdveo, &refUp);
+			hdveo = posCam3P + refFront;   //hdveo es la variable donde se guarda hacia donde ve la camara
+			D3DXMatrixLookAtLH(&vistaPrev, &posCam3P, &hdveo, &refUp);  //VA DENTRO DEL IF   
 		}
+
+		//if (camaraTipo) {     ESTE IF DEBE SER DONDE CAMBIAMOS EL DEFINIENDO HACIA DONDE VEMOS Y EL HACIA DONDE ESTA LA MATRIZ DE LOOKAKT
+		//	//Primera Persona
+		//	hdveo = posCam + refFront;
+		//	D3DXMatrixLookAtLH(&vistaPrev, &posCam, &hdveo, &refUp);
+		//}
+		//else
+		//{
+		//	//Tercera Persona
+		//	hdveo = posCam3P + refFront;
+		//	D3DXMatrixLookAtLH(&vistaPrev, &posCam3P, &hdveo, &refUp);
+		//}
 
 		D3DXMatrixMultiply(&vista, &vista, &vistaPrev);
 

@@ -391,15 +391,16 @@ public:
 		d3dContext->PSSetSamplers(0, 1, &colorMapSampler);
 
 
-	    //Separa el modelo de la camara  (Ajustar los parametros)
+	    //Separa el modelo de la camara  (Ajustar los parametros) solo cuando esta en tercera persona
 		D3DXMATRIX translacionRotCam;
-		if (camaraTipo) {
-			D3DXMatrixTranslation(&translacionRotCam, 0.0, 0.0, -6.4);
+		if (camaraTipo) {  //cuando esté en primera persona
+			D3DXMatrixTranslation(&translacionRotCam, 0.0, 0.0, -3.0);   // para la nave -0.5, 0.0, 5.0
 
 		} 
 		else {
-			D3DXMatrixTranslation(&translacionRotCam, 0.0, 0.0, 0.0);
+			D3DXMatrixTranslation(&translacionRotCam, -3.0, 0.0, 20.0); //para la nave -4.0, 0.0, 75.0
 		}
+
 		//mueve la camara
 		D3DXMATRIX rotationMat;
 		D3DXMatrixRotationYawPitchRoll(&rotationMat, 0.0f, 0.0f, 0.0f);
@@ -416,15 +417,15 @@ public:
 		D3DXMatrixTranslation(&translationMat, posX, ypos, posZ);
 
 		D3DXMATRIX scaleMat;
-		D3DXMatrixScaling(&scaleMat, scale,scale,scale);
+		D3DXMatrixScaling(&scaleMat, scale,scale * 1.5,scale);
 
 		D3DXMATRIX worldMat;
 
 		if (movCam) {
-			worldMat = scaleMat * translacionRotCam * rotationMat * translationMat;
+			worldMat = scaleMat * translacionRotCam * rotationMat * translationMat;  //si nos movemos con la camara	
 		}
 		else {
-			worldMat = scaleMat * rotationMat * translationMat;
+			worldMat = scaleMat * rotationMat * translationMat;  //si no
 		}
 
 		D3DXMatrixTranspose(&worldMat, &worldMat);

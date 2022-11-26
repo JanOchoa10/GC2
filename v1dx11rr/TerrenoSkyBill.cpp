@@ -250,8 +250,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 		m_pMouseDevice->GetDeviceState(sizeof(mouseData), (void*)&mouseData);
 
 		// Mouse move
-		dxrr->izqder = (mouseData.lX / 1000.0f);
-		dxrr->arriaba = -(mouseData.lY / 1000.0f);
+		dxrr->izqder = (mouseData.lX / 1750.0f);
+		dxrr->arriaba = -(mouseData.lY / 1750.0f);
 
 
 		//Checar gamepad

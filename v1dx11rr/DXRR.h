@@ -42,7 +42,7 @@ public:
 	SkyDome *skydome;
 	BillboardRR *billboard;
 	Camara *camara;
-	ModeloRR* model;
+	ModeloRR* prota;
 	ModeloRR* nave;
 	ModeloRR* hangar;
 	ModeloRR* vivienda;
@@ -82,13 +82,13 @@ public:
 		izqder = 0;
 		arriaba = 0;
 		billCargaFuego();
-		camara = new Camara(D3DXVECTOR3(0,80,6), D3DXVECTOR3(0,80,0), D3DXVECTOR3(0,1,0), Ancho, Alto);
+		camara = new Camara(D3DXVECTOR3(0,80,10), D3DXVECTOR3(0,80,0), D3DXVECTOR3(0,1,0), Ancho, Alto);
 		terreno = new TerrenoRR(500, 500, d3dDevice, d3dContext);  //Dos primeros números son la escala del terreno 
 		skydome = new SkyDome(32, 32, 100.0f, &d3dDevice, &d3dContext, L"SkyDome12.png");  // skydome cambiado
 		billboard = new BillboardRR(L"Assets/Billboards/fuego-anim.png",L"Assets/Billboards/fuego-anim-normal.png", d3dDevice, d3dContext, 5);
-		model = new ModeloRR(d3dDevice, d3dContext, "Assets/CorotSnake/Corot.obj", L"Assets/CorotSnake/AlbedoCorot.jpg", L"Assets/CorotSnake/MetallicCorot.jpg", 10, 0);
+		prota = new ModeloRR(d3dDevice, d3dContext, "Assets/CorotSnake/Corot.obj", L"Assets/CorotSnake/AlbedoCorot.jpg", L"Assets/CorotSnake/MetallicCorot.jpg", 10, 0);
 		nave = new ModeloRR(d3dDevice, d3dContext, "Assets/Nave/Nave.obj", L"Assets/Nave/ColorNave.png", L"Assets/Nave/MetallicNave.png", 15, 0);
-		hangar = new ModeloRR(d3dDevice, d3dContext, "Assets/Hangar/Hangar.obj", L"Assets/Hangar/HangarColor.jpg", L"Assets/Hangar/HangarRough.jpg", 0, 2.3); //Metallic o Rough se ven bien
+		hangar = new ModeloRR(d3dDevice, d3dContext, "Assets/Hangar/Hangar.obj", L"Assets/Hangar/HangarColor.jpg", L"Assets/Hangar/HangarRough.jpg", 0, 3); //Metallic o Rough se ven bien
 		vivienda = new ModeloRR(d3dDevice, d3dContext, "Assets/Vivienda/Vivienda2.obj", L"Assets/Vivienda/ViviendaColor.png", L"Assets/Vivienda/ViviendaRough.png", 140, 8);
 		vivienda2 = new ModeloRR(d3dDevice, d3dContext, "Assets/Vivienda/Laberinto2.obj", L"Assets/Vivienda/Laberinto2_Color.png", L"Assets/Vivienda/Laberinto2_Specular.png", -80, 8);
 		cheep = new ModeloRR(d3dDevice, d3dContext, "Assets/Auto/Cheep.obj", L"Assets/Auto/Cheep.jpg", L"Assets/Auto/Imagen1.jpg", 0, -30);
@@ -278,8 +278,8 @@ public:
 		d3dContext->ClearRenderTargetView( backBufferTarget, clearColor );
 		d3dContext->ClearDepthStencilView( depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0 );
 
-		camara->posCam.y = terreno->Superficie(camara->posCam.x, camara->posCam.z) + 10 ;
-		camara->posCam3P.y = terreno->Superficie(camara->posCam.x, camara->posCam.z) + 13; //altura de la camara en tercera persona
+		camara->posCam.y = terreno->Superficie(camara->posCam.x, camara->posCam.z) + 15;
+		camara->posCam3P.y = terreno->Superficie(camara->posCam.x, camara->posCam.z) + 20; //altura de la camara en tercera persona
 
 		camara->UpdateCam(vel, arriaba, izqder, camaraTipo);
 
@@ -297,18 +297,20 @@ public:
 
 		//TurnOffAlphaBlending();
 
-		model->setPosX(camara->hdveo.x);
-		model->setPosZ(camara->hdveo.z - 5 );                                                                                         //xm_pi
-		model->Draw(camara->vista, camara->proyeccion, terreno->Superficie(model->getPosX(), model->getPosZ()) + 2.5, camara->posCam, 10.0f, rotCam + XM_PI, 'Y', 1, camaraTipo, true);
+		prota->setPosX(camara->hdveo.x);
+		prota->setPosZ(camara->hdveo.z);                                                                                         //xm_pi
+		prota->Draw(camara->vista, camara->proyeccion, terreno->Superficie(prota->getPosX(), prota->getPosZ()) + 2.5, camara->posCam, 10.0f, rotCam + XM_PI, 'Y', 1, camaraTipo, true);
 
-
-		nave->Draw(camara->vista, camara->proyeccion, terreno->Superficie(100, 20), camara->posCam, 10.0f, 0, 'A', 1.7, camaraTipo, false);
-		hangar->Draw(camara->vista, camara->proyeccion, terreno->Superficie(100, 20), camara->posCam, 10.0f, 0, 'A', 9.0, camaraTipo, false); //último valor es la escala
-		vivienda->Draw(camara->vista, camara->proyeccion, terreno->Superficie(100, 20), camara->posCam, 10.0f, 0, 'A', 1, camaraTipo, false);
-		vivienda2->Draw(camara->vista, camara->proyeccion, terreno->Superficie(100, 20), camara->posCam, 10.0f, 0, 'A', 1, camaraTipo, false);
-		cheep->Draw(camara->vista, camara->proyeccion, terreno->Superficie(0, 0), camara->posCam, 1.0f, 0, 'A', 5.0, camaraTipo, false);
-		sandman->Draw(camara->vista, camara->proyeccion, terreno->Superficie(0, 0), camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
-		skeleton->Draw(camara->vista, camara->proyeccion, terreno->Superficie(0, 0), camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+		/*nave->setPosX(camara->hdveo.x);
+		nave->setPosZ(camara->hdveo.z);
+		nave->Draw(camara->vista, camara->proyeccion, terreno->Superficie(nave->getPosX(), nave->getPosZ()), camara->posCam, 10.0f, rotCam + XM_PI, 'Y', 3, camaraTipo, true);*/
+		
+		hangar->Draw(camara->vista, camara->proyeccion, terreno->Superficie(0, 3), camara->posCam, 10.0f, 0, 'A', 9.0, camaraTipo, false); //último valor es la escala
+		vivienda->Draw(camara->vista, camara->proyeccion, terreno->Superficie(140, 8), camara->posCam, 10.0f, 0, 'A', 1, camaraTipo, false);
+		vivienda2->Draw(camara->vista, camara->proyeccion, terreno->Superficie(-80, 8), camara->posCam, 10.0f, 0, 'A', 1, camaraTipo, false);
+		//cheep->Draw(camara->vista, camara->proyeccion, terreno->Superficie(0, -30), camara->posCam, 1.0f, 0, 'A', 5.0, camaraTipo, false);
+		sandman->Draw(camara->vista, camara->proyeccion, terreno->Superficie(0, -60), camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+		skeleton->Draw(camara->vista, camara->proyeccion, terreno->Superficie(-10, -60), camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
 		                                                                                        //specular //cambiar letra //escala
 		swapChain->Present( 1, 0 );
 	}
