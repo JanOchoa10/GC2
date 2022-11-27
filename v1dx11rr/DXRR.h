@@ -40,8 +40,17 @@ public:
 
 	TerrenoRR *terreno;
 	SkyDome *skydome;
+
 	BillboardRR *billboard;
+	BillboardRR* palma;
+	BillboardRR* palma2;
+	BillboardRR* bush;
+	BillboardRR* bush2;
+	BillboardRR* cactus;
+	BillboardRR* cactus2;
+
 	Camara *camara;
+
 	ModeloRR* prota;
 	ModeloRR* nave;
 	ModeloRR* hangar;
@@ -81,11 +90,20 @@ public:
 		IniciaD3D(hWnd);
 		izqder = 0;
 		arriaba = 0;
-		billCargaFuego();
+
 		camara = new Camara(D3DXVECTOR3(0,80,10), D3DXVECTOR3(0,80,0), D3DXVECTOR3(0,1,0), Ancho, Alto);
 		terreno = new TerrenoRR(500, 500, d3dDevice, d3dContext);  //Dos primeros números son la escala del terreno 
 		skydome = new SkyDome(32, 32, 100.0f, &d3dDevice, &d3dContext, L"SkyDome12.png");  // skydome cambiado
-		billboard = new BillboardRR(L"Assets/Billboards/fuego-anim.png",L"Assets/Billboards/fuego-anim-normal.png", d3dDevice, d3dContext, 5);
+
+		billCargaFuego();
+		billboard = new BillboardRR(L"Assets/Billboards/fuego-anim.png", L"Assets/Billboards/fuego-anim-normal.png", d3dDevice, d3dContext, 5);
+		palma = new BillboardRR(L"Assets/Billboards/Palma.png", L"Assets/Billboards/PalmaNormal.png", d3dDevice, d3dContext, 50);
+		palma2 = new BillboardRR(L"Assets/Billboards/Palma.png", L"Assets/Billboards/PalmaNormal.png", d3dDevice, d3dContext, 35);
+		bush = new BillboardRR(L"Assets/Billboards/bush.png", L"Assets/Billboards/bushNormal.png", d3dDevice, d3dContext, 8);
+		bush2 = new BillboardRR(L"Assets/Billboards/bush.png", L"Assets/Billboards/bushNormal.png", d3dDevice, d3dContext, 12);
+		cactus = new BillboardRR(L"Assets/Billboards/cactus.png", L"Assets/Billboards/cactusNormal.png", d3dDevice, d3dContext, 15);
+		cactus2 = new BillboardRR(L"Assets/Billboards/cactus.png", L"Assets/Billboards/cactusNormal.png", d3dDevice, d3dContext, 15);
+		
 		prota = new ModeloRR(d3dDevice, d3dContext, "Assets/CorotSnake/Corot.obj", L"Assets/CorotSnake/AlbedoCorot.jpg", L"Assets/CorotSnake/MetallicCorot.jpg", 10, 0);
 		nave = new ModeloRR(d3dDevice, d3dContext, "Assets/Nave/Nave.obj", L"Assets/Nave/ColorNave.png", L"Assets/Nave/MetallicNave.png", 15, 0);
 		hangar = new ModeloRR(d3dDevice, d3dContext, "Assets/Hangar/Hangar.obj", L"Assets/Hangar/HangarColor.jpg", L"Assets/Hangar/HangarRough.jpg", 0, 3); //Metallic o Rough se ven bien
@@ -293,9 +311,16 @@ public:
 		terreno->Draw(camara->vista, camara->proyeccion);
 		//TurnOnAlphaBlending();
 		billboard->Draw(camara->vista, camara->proyeccion, camara->posCam,
-			-11, -78, 4, 5, uv1, uv2, uv3, uv4, frameBillboard);
+			-11, -78, 4, 5, uv1, uv2, uv3, uv4, frameBillboard, true);
 
 		//TurnOffAlphaBlending();
+
+		palma->Draw(camara->vista, camara->proyeccion, camara->posCam, 75, 150, terreno->Superficie(75, 150) -13, 50, uv1, uv2, uv3, uv4, frameBillboard, false);
+		palma2->Draw(camara->vista, camara->proyeccion, camara->posCam, 25, 150, terreno->Superficie(25, 150) - 9, 35, uv1, uv2, uv3, uv4, frameBillboard, false);
+		bush->Draw(camara->vista, camara->proyeccion, camara->posCam, 70, 150, terreno->Superficie(70, 150) - 2, 8, uv1, uv2, uv3, uv4, frameBillboard, false);
+		bush2->Draw(camara->vista, camara->proyeccion, camara->posCam, 40, 150, terreno->Superficie(40, 150) - 2, 12, uv1, uv2, uv3, uv4, frameBillboard, false);
+		cactus->Draw(camara->vista, camara->proyeccion, camara->posCam, 150, -150, terreno->Superficie(150, -150) - 4, 15, uv1, uv2, uv3, uv4, frameBillboard, false);
+		cactus2->Draw(camara->vista, camara->proyeccion, camara->posCam, -100, -150, terreno->Superficie(-100, -150) - 4, 15, uv1, uv2, uv3, uv4, frameBillboard, false);
 
 		prota->setPosX(camara->hdveo.x);
 		prota->setPosZ(camara->hdveo.z);                                                                                         //xm_pi
