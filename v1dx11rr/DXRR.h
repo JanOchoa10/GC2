@@ -72,6 +72,9 @@ public:
 	GUI* vida;
 	Text* texto;
 	Text* texto2;
+	bool fueraTotem, fueraTotem2, fueraTotem3, fueraTotem4, fueraTotem5 = true;
+	int cantTotems = 0;
+	bool haColisionado;
 
 	ModeloRR* prota;
 	ModeloRR* nave;
@@ -79,6 +82,11 @@ public:
 	ModeloRR* vivienda;
 	ModeloRR* vivienda2;
 	ModeloRR* cheep;
+	ModeloRR* totem;
+	ModeloRR* totem2;
+	ModeloRR* totem3;
+	ModeloRR* totem4;
+	ModeloRR* totem5;
 	ModeloRR* sandman;
 	ModeloRR* sandman2;
 	ModeloRR* sandman3;
@@ -158,16 +166,24 @@ public:
 		vivienda = new ModeloRR(d3dDevice, d3dContext, "Assets/NewVivienda/Vivienda4.obj", L"Assets/NewVivienda/lambert12_Base_Color.png", L"Assets/NewVivienda/lambert12_Roughness.png", 140, 150);
 		vivienda2 = new ModeloRR(d3dDevice, d3dContext, "Assets/Vivienda/Laberinto2.obj", L"Assets/Vivienda/Laberinto2_Color.png", L"Assets/Vivienda/Laberinto2_Specular.png", -125, -75);
 		cheep = new ModeloRR(d3dDevice, d3dContext, "Assets/Auto/Cheep.obj", L"Assets/Auto/Cheep.jpg", L"Assets/Auto/Imagen1.jpg", 0, -30);
+		
+		totem = new ModeloRR(d3dDevice, d3dContext, "Assets/SkeletonCubeModel/SkeletonCube.obj", L"Assets/SkeletonCubeModel/Cube.jpg", L"Assets/SkeletonCubeModel/CubeRough.jpg", 150, -90);
+		totem2 = new ModeloRR(d3dDevice, d3dContext, "Assets/SkeletonCubeModel/SkeletonCube.obj", L"Assets/SkeletonCubeModel/Cube.jpg", L"Assets/SkeletonCubeModel/CubeRough.jpg", 90, -35);
+		totem3 = new ModeloRR(d3dDevice, d3dContext, "Assets/SkeletonCubeModel/SkeletonCube.obj", L"Assets/SkeletonCubeModel/Cube.jpg", L"Assets/SkeletonCubeModel/CubeRough.jpg", 0, -150);
+		totem4 = new ModeloRR(d3dDevice, d3dContext, "Assets/SkeletonCubeModel/SkeletonCube.obj", L"Assets/SkeletonCubeModel/Cube.jpg", L"Assets/SkeletonCubeModel/CubeRough.jpg", 0, 125);
+		totem5 = new ModeloRR(d3dDevice, d3dContext, "Assets/SkeletonCubeModel/SkeletonCube.obj", L"Assets/SkeletonCubeModel/Cube.jpg", L"Assets/SkeletonCubeModel/CubeRough.jpg", 200, 100);
+
 		sandman = new ModeloRR(d3dDevice, d3dContext, "Assets/SandMan/SandMan.obj", L"Assets/SandMan/SandManColor.png", L"Assets/SandMan/SandManSpecular2.png", 90, -90);
 		sandman2 = new ModeloRR(d3dDevice, d3dContext, "Assets/SandMan/SandMan.obj", L"Assets/SandMan/SandManColor.png", L"Assets/SandMan/SandManSpecular2.png", 50, 100);
 		sandman3 = new ModeloRR(d3dDevice, d3dContext, "Assets/SandMan/SandMan.obj", L"Assets/SandMan/SandManColor.png", L"Assets/SandMan/SandManSpecular2.png", 175, 50);
 		sandman4 = new ModeloRR(d3dDevice, d3dContext, "Assets/SandMan/SandMan.obj", L"Assets/SandMan/SandManColor.png", L"Assets/SandMan/SandManSpecular2.png", -125, 50);
-		sandman5 = new ModeloRR(d3dDevice, d3dContext, "Assets/SandMan/SandMan.obj", L"Assets/SandMan/SandManColor.png", L"Assets/SandMan/SandManSpecular2.png", 0, -100);
+		sandman5 = new ModeloRR(d3dDevice, d3dContext, "Assets/SandMan/SandMan.obj", L"Assets/SandMan/SandManColor.png", L"Assets/SandMan/SandManSpecular2.png", 50, 0);
+		
 		skeleton = new ModeloRR(d3dDevice, d3dContext, "Assets/Skeleton/Skeleton.obj", L"Assets/Skeleton/SkeletonColor.png", L"Assets/Skeleton/lambert2_Height.png", 140, 115);
 		skeleton2 = new ModeloRR(d3dDevice, d3dContext, "Assets/Skeleton/Skeleton.obj", L"Assets/Skeleton/SkeletonColor.png", L"Assets/Skeleton/lambert2_Height.png", 175, -25);
-		skeleton3 = new ModeloRR(d3dDevice, d3dContext, "Assets/Skeleton/Skeleton.obj", L"Assets/Skeleton/SkeletonColor.png", L"Assets/Skeleton/lambert2_Height.png", -10, 65);
-		skeleton4 = new ModeloRR(d3dDevice, d3dContext, "Assets/Skeleton/Skeleton.obj", L"Assets/Skeleton/SkeletonColor.png", L"Assets/Skeleton/lambert2_Height.png", -10, -90);
-		skeleton5 = new ModeloRR(d3dDevice, d3dContext, "Assets/Skeleton/Skeleton.obj", L"Assets/Skeleton/SkeletonColor.png", L"Assets/Skeleton/lambert2_Height.png", -10, -100);
+		skeleton3 = new ModeloRR(d3dDevice, d3dContext, "Assets/Skeleton/Skeleton.obj", L"Assets/Skeleton/SkeletonColor.png", L"Assets/Skeleton/lambert2_Height.png", -25, 150);
+		skeleton4 = new ModeloRR(d3dDevice, d3dContext, "Assets/Skeleton/Skeleton.obj", L"Assets/Skeleton/SkeletonColor.png", L"Assets/Skeleton/lambert2_Height.png", 100, 35);
+		skeleton5 = new ModeloRR(d3dDevice, d3dContext, "Assets/Skeleton/Skeleton.obj", L"Assets/Skeleton/SkeletonColor.png", L"Assets/Skeleton/lambert2_Height.png", -25, -100);
 
 		camaraTipo = true;
 		rotCam = 0.0;
@@ -446,24 +462,28 @@ public:
 		sandman2->Draw(camara->vista, camara->proyeccion, 50, terreno->Superficie(50, 100), 100, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
 		sandman3->Draw(camara->vista, camara->proyeccion, 175, terreno->Superficie(175, 50), 50, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
 		sandman4->Draw(camara->vista, camara->proyeccion, -125, terreno->Superficie(-125, 50), 50, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
-		sandman5->Draw(camara->vista, camara->proyeccion, 0, terreno->Superficie(0, -100), -100, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+		sandman5->Draw(camara->vista, camara->proyeccion, 50, terreno->Superficie(50,0), 0, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
 
 		skeleton->Draw(camara->vista, camara->proyeccion, 140, terreno->Superficie(140, 115), 115, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
 		skeleton2->Draw(camara->vista, camara->proyeccion, 175, terreno->Superficie(175, -25), -25, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
-		skeleton3->Draw(camara->vista, camara->proyeccion, -10, terreno->Superficie(-10, 65), 65, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
-		skeleton4->Draw(camara->vista, camara->proyeccion, -10, terreno->Superficie(-10, -90), -90, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
-		skeleton5->Draw(camara->vista, camara->proyeccion, -10, terreno->Superficie(-10, -100), -100, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+		skeleton3->Draw(camara->vista, camara->proyeccion, -25, terreno->Superficie(-25, 150), 150, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+		skeleton4->Draw(camara->vista, camara->proyeccion, 100, terreno->Superficie(100, 35), 35, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+		skeleton5->Draw(camara->vista, camara->proyeccion, -25, terreno->Superficie(-25, -100), -100, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
 		 
                                                                                       //specular //cambiar letra //escala
 
-		TurnOnAlphaBlending();
-		//texto2->DrawTextW(-0.50, -0.40, "HAS GANADO!", 0.015); //-0.50, 0.80
-		TurnOffAlphaBlending();
+		if (cantTotems == 5) {
+			TurnOnAlphaBlending();
+			texto2->DrawTextW(-0.50, 0.80, "HAS GANADO!", 0.015); //-0.50, 0.80
+			TurnOffAlphaBlending();
+		}
 
 		vida->Draw(-0.86, -0.50);  //esquina inferior izq -0.86, -0.50   esquina inferior derecha 0.45, -0.50
 
+		string totems = to_string(cantTotems);
+
 		TurnOnAlphaBlending();
-		texto->DrawTextW(-0.95, 0.80, "Artilugios:   ", 0.015); //+artilugios     esquina sup izq -0.50, 0.80   inf derecha  -0.95, -0.40
+		texto->DrawTextW(-0.95, 0.80, "Totems:   "  + totems, 0.015); // esquina sup izq -0.50, 0.80   inf derecha  -0.95, -0.40
 
 		texto->DrawTextW(-0.95, 0.90, "Tiempo:  " + texto->Time(segundos), 0.015);  // esquina sup izq -0.95, 0.90  inf derecha  -0.95, -0.50
 		TurnOffAlphaBlending();
@@ -476,22 +496,110 @@ public:
 			float radioPared = 40;
 
 			if (isPointInsideSphere(camara->getPos(), vivienda->getSphere(radioPared, vivienda->getPosX(), vivienda->getPosZ()))) {
-				//status = true;
 				camara->posCam = camara->pastCam;
 			}
 
 			float radioPasillo = 70;
 
 			if (isPointInsideSphere(camara->getPos(), vivienda2->getSphere(radioPasillo, vivienda2->getPosX(), vivienda2->getPosZ()))) {
-				//status = true;
 				camara->posCam = camara->pastCam;
 			}
 
 			float radioHangar = 60;
 
 			if (isPointInsideSphere(camara->getPos(), hangar->getSphere(radioHangar, hangar->getPosX(), hangar->getPosZ()))) {
-				//status = true;
 				camara->posCam = camara->pastCam;
+			}
+
+			float radioSandman = 10;
+
+			if (isPointInsideSphere(camara->getPos(), sandman->getSphere(radioSandman, sandman->getPosX(), sandman->getPosZ()))) {
+				camara->posCam = camara->pastCam;
+				bajarVida();
+			}
+			if (isPointInsideSphere(camara->getPos(), sandman2->getSphere(radioSandman, sandman2->getPosX(), sandman2->getPosZ()))) {
+				camara->posCam = camara->pastCam;
+				bajarVida();
+			}
+			if (isPointInsideSphere(camara->getPos(), sandman3->getSphere(radioSandman, sandman3->getPosX(), sandman3->getPosZ()))) {
+				camara->posCam = camara->pastCam;
+				bajarVida();
+			}
+			if (isPointInsideSphere(camara->getPos(), sandman4->getSphere(radioSandman, sandman4->getPosX(), sandman4->getPosZ()))) {
+				camara->posCam = camara->pastCam;
+				bajarVida();
+			}
+			if (isPointInsideSphere(camara->getPos(), sandman5->getSphere(radioSandman, sandman5->getPosX(), sandman5->getPosZ()))) {
+				camara->posCam = camara->pastCam;
+				bajarVida();
+			}
+
+			float radioSkeleton = 10;
+
+			if (isPointInsideSphere(camara->getPos(), skeleton->getSphere(radioSkeleton, skeleton->getPosX(), skeleton->getPosZ()))) {
+				camara->posCam = camara->pastCam;
+				bajarVida();
+			}
+			if (isPointInsideSphere(camara->getPos(), skeleton2->getSphere(radioSkeleton, skeleton2->getPosX(), skeleton2->getPosZ()))) {
+				camara->posCam = camara->pastCam;
+				bajarVida();
+			}
+			if (isPointInsideSphere(camara->getPos(), skeleton3->getSphere(radioSkeleton, skeleton3->getPosX(), skeleton3->getPosZ()))) {
+				camara->posCam = camara->pastCam;
+				bajarVida();
+			}
+			if (isPointInsideSphere(camara->getPos(), skeleton4->getSphere(radioSkeleton, skeleton4->getPosX(), skeleton4->getPosZ()))) {
+				camara->posCam = camara->pastCam;
+				bajarVida();
+			}
+			if (isPointInsideSphere(camara->getPos(), skeleton5->getSphere(radioSkeleton, skeleton5->getPosX(), skeleton5->getPosZ()))) {
+				camara->posCam = camara->pastCam;
+				bajarVida();
+			}
+
+
+			float radioTotem = 5;
+			if (fueraTotem) {
+				totem->Draw(camara->vista, camara->proyeccion, 150, terreno->Superficie(150, -90) + 5, -90, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+				if (isPointInsideSphere(camara->getPos(), totem->getSphere(radioTotem, totem->getPosX(), totem->getPosZ()))) {
+					camara->posCam = camara->pastCam;
+					cantTotems++;
+					fueraTotem = false;
+				}
+			}
+			if (fueraTotem2) {
+				totem2->Draw(camara->vista, camara->proyeccion, 90, terreno->Superficie(90, -35) + 5, -35, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+				if (isPointInsideSphere(camara->getPos(), totem2->getSphere(radioTotem, totem2->getPosX(), totem2->getPosZ()))) {
+					camara->posCam = camara->pastCam;
+					cantTotems++;
+					fueraTotem2 = false;
+				}
+			}
+			if (fueraTotem3) {
+				totem3->Draw(camara->vista, camara->proyeccion, 0, terreno->Superficie(0, -150) + 5, -150, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+				if (isPointInsideSphere(camara->getPos(), totem3->getSphere(radioTotem, totem3->getPosX(), totem3->getPosZ()))) {
+					camara->posCam = camara->pastCam;
+					cantTotems++;
+					fueraTotem3 = false;
+				}
+			}
+			
+			if (fueraTotem4) {
+				totem4->Draw(camara->vista, camara->proyeccion, 0, terreno->Superficie(0, 125) + 5, 125, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+				if (isPointInsideSphere(camara->getPos(), totem4->getSphere(radioTotem, totem4->getPosX(), totem4->getPosZ()))) {
+					camara->posCam = camara->pastCam;
+					cantTotems++;
+					fueraTotem4 = false;
+				}
+			}
+			
+			if (fueraTotem5) {
+				totem5->Draw(camara->vista, camara->proyeccion, 200, terreno->Superficie(200, 100) + 5, 100, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+				if (isPointInsideSphere(camara->getPos(), totem5->getSphere(radioTotem, totem5->getPosX(), totem5->getPosZ()))) {
+					camara->posCam = camara->pastCam;
+					cantTotems++;
+					fueraTotem5 = false;
+				}
 			}
 		}
 	#pragma endregion
@@ -507,6 +615,10 @@ public:
 
 		if (distance < sphere[2])
 			collition = true;
+
+		if (distance > 15) {
+			haColisionado = false;
+		}
 		return collition;
 	}
 
@@ -738,6 +850,25 @@ public:
 		TurnOffDepth();
 		skydome->Render(camara->posCam, contadorGLSL);
 		TurnOnDepth();
+	}
+
+	void bajarVida() {
+		if (vidas == 4) {
+			vida = new GUI(d3dDevice, d3dContext, 0.15, 0.26, L"Assets/UI/health_2.png");
+		}
+
+		if (vidas == 3) {
+			vida = new GUI(d3dDevice, d3dContext, 0.15, 0.26, L"Assets/UI/health_1.png");
+		}
+
+		if (vidas == 2) {
+			vida = new GUI(d3dDevice, d3dContext, 0.15, 0.26, L"Assets/UI/game_over.png");
+		}
+
+		if (!haColisionado) {
+			vidas = vidas - 1;
+			haColisionado = true;
+		}
 	}
 
 };
