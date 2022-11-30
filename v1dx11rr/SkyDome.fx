@@ -1,41 +1,60 @@
-Texture2D textures;
+Texture2D textures : register(t0);
+Texture2D textures2 : register(t1);
+Texture2D textures3 : register(t2);
+//se cargan las texturas normales
 SamplerState colorSampler : register(s0);
 
-cbuffer MatrixBuffer
+cbuffer MatrixBuffer //bufer para oftener las matrices
 {
-	matrix worldMatrix;
-	matrix viewMatrix;
-	matrix projMatrix;
-	float4 valores;
+    matrix worldMatrix;
+    matrix viewMatrix;
+    matrix projMatrix;
+    float4 valores;
 };
 
 struct VS_Input
 {
-	float4 pos : POSITION;
-	float2 tex0 : TEXCOORD0;
+    float4 pos : POSITION;
+    float2 tex0 : TEXCOORD0;
 };
 
 struct PS_Input
 {
-	float4 pos : SV_POSITION;
-	float2 tex0 : TEXCOORD0;
+    float4 pos : SV_POSITION;
+    float2 tex0 : TEXCOORD0;
+    float4 var : TEXCOORD1;
 };
 
 PS_Input VS_Main(VS_Input vertex)
 {
-	PS_Input vsOut = (PS_Input)0;
-	vsOut.pos = mul(vertex.pos, worldMatrix);
-	vsOut.pos = mul(vsOut.pos, viewMatrix);
-	vsOut.pos = mul(vsOut.pos, projMatrix);
+    PS_Input vsOut = (PS_Input) 0;
+    vsOut.pos = mul(vertex.pos, worldMatrix);
+    vsOut.pos = mul(vsOut.pos, viewMatrix);
+    vsOut.pos = mul(vsOut.pos, projMatrix);
 
-	vsOut.tex0 = vertex.tex0;
+    vsOut.tex0 = vertex.tex0;
+    vsOut.var = valores;
 
-	return vsOut;
+    return vsOut;
 }
 
 float4 PS_Main(PS_Input pix) : SV_TARGET
 {
-	float4 finalColor = textures.Sample(colorSampler, pix.tex0);
+    float4 textMF;
+    float4 Dia = textures.Sample(colorSampler, pix.tex0);
+    float4 Atardecer = textures2.Sample(colorSampler, pix.tex0);
+    float4 Noche = textures3.Sample(colorSampler, pix.tex0);
+    //lerp fade betwween two textures
+    if (pix.var.w < 80)
+        textMF = lerp(Atardecer, Dia, saturate(pix.var.w / 80));
 
-	return finalColor;
+    if (pix.var.w < 160 && pix.var.w > 79)
+        textMF = lerp(Dia, Noche, saturate((pix.var.w - 80) / 80));
+
+    if (pix.var.w > 159)
+        textMF = lerp(Noche, Atardecer, saturate((pix.var.w - 120) / 40));
+
+    float4 outputColor = textMF;
+
+    return outputColor;
 }

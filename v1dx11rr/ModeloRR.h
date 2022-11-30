@@ -72,7 +72,36 @@ private:
 	float posX;
 	float posZ;
 
+	float sphere[3];
+	float square[4];
+
+	float pos[2];
+
 public:
+	float* getSphere(float radio, float posx, float posz) {
+		sphere[0] = posx;
+		sphere[1] = posz;
+		sphere[2] = radio;
+
+		return sphere;
+	}
+
+	float* getSquare(float width, float height, float posx, float posz) {
+		square[0] = posx;
+		square[1] = posz;
+		square[2] = width;
+		square[3] = height;
+
+		return square;
+	}
+
+	float* getPos() {
+		pos[0] = posX;
+		pos[1] = posZ;
+
+		return pos;
+	}
+
 	ModeloRR(ID3D11Device* D3DDevice, ID3D11DeviceContext* D3DContext, char* ModelPath, WCHAR* colorTexturePath, WCHAR* specularTexturePath, float _posX, float _posZ)
 	{
 		//copiamos el device y el device context a la clase terreno
@@ -359,7 +388,7 @@ public:
 
 	}
 
-	void Draw(D3DXMATRIX vista, D3DXMATRIX proyeccion, float ypos, D3DXVECTOR3 posCam, float specForce, float rot, char angle, float scale, bool camaraTipo, bool movCam)
+	void Draw(D3DXMATRIX vista, D3DXMATRIX proyeccion, float xpos, float ypos, float zpos, D3DXVECTOR3 posCam, float specForce, float rot, char angle, float scale, bool camaraTipo, bool movCam)
 	{
 		static float rotation = 0.0f;
 		rotation += 0.01;
@@ -394,16 +423,21 @@ public:
 	    //Separa el modelo de la camara  (Ajustar los parametros) solo cuando esta en tercera persona
 		D3DXMATRIX translacionRotCam;
 		if (camaraTipo) {  //cuando esté en primera persona
-			D3DXMatrixTranslation(&translacionRotCam, 0.0, 0.0, -3.0);   // para la nave -0.5, 0.0, 5.0
+			D3DXMatrixTranslation(&translacionRotCam, -0.5, 0.0, 5.0);   // para la nave -0.5, 0.0, 5.0   para persona 0.0, 0.0, -3.0
 
 		} 
 		else {
-			D3DXMatrixTranslation(&translacionRotCam, -3.0, 0.0, 20.0); //para la nave -4.0, 0.0, 75.0
+			D3DXMatrixTranslation(&translacionRotCam, -4.0, -3.0, 35.0); //para la nave -4.0, 0.0, 75.0    para persona  -3.0, 0.0, 20.0
 		}
 
 		//mueve la camara
 		D3DXMATRIX rotationMat;
 		D3DXMatrixRotationYawPitchRoll(&rotationMat, 0.0f, 0.0f, 0.0f);
+		/*D3DXMATRIX translationMat;
+		D3DXMatrixTranslation(&translationMat, xpos, ypos, zpos);
+		D3DXMATRIX ry;
+		D3DXMatrixRotationY(&ry, rot);
+		viewMatrix *= ry;*/
 		
 		if(angle == 'X')
 			D3DXMatrixRotationX(&rotationMat, rot);

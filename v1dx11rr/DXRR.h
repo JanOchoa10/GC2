@@ -10,6 +10,7 @@
 #include "Billboard.h"
 #include "ModeloRR.h"
 #include "XACT3Util.h"
+#include "Tiempo.h"
 
 class DXRR{	
 
@@ -35,11 +36,26 @@ public:
 	ID3D11DepthStencilState* depthStencilDisabledState;
 
 	ID3D11BlendState *alphaBlendState, *commonBlendState;
+	D3DXVECTOR3 dirluz;
+	D3DXVECTOR4 luzAmbiental;
+	D3DXVECTOR4 luzDifusa;
+	D3DXVECTOR4 luzEspecular;
 
+	#define PI 3.14159265
 	int frameBillboard;
+	int Contador;
+	int ContFramesTarde;
+	int ContFramesNoche;
+	int ContFramesMañana;
+	int contadorGLSL;
+	float angle;
+	float luzx = 0.0f;
+	float luzy = 0.0f;
+	float luzz = 0.0f;
 
 	TerrenoRR *terreno;
 	SkyDome *skydome;
+	BillboardRR* oasis;
 
 	BillboardRR *billboard;
 	BillboardRR* palma;
@@ -50,6 +66,7 @@ public:
 	BillboardRR* cactus2;
 
 	Camara *camara;
+	Tiempo* levelTime;
 
 	ModeloRR* prota;
 	ModeloRR* nave;
@@ -77,6 +94,10 @@ public:
 	
     DXRR(HWND hWnd, int Ancho, int Alto)
 	{
+		ContFramesMañana = 80;
+		ContFramesNoche = 40;
+		ContFramesTarde = 80;
+		contadorGLSL = 0;
 		breakpoint = false;
 		frameBillboard = 0;
 		ancho = Ancho;
@@ -92,8 +113,17 @@ public:
 		arriaba = 0;
 
 		camara = new Camara(D3DXVECTOR3(0,80,10), D3DXVECTOR3(0,80,0), D3DXVECTOR3(0,1,0), Ancho, Alto);
-		terreno = new TerrenoRR(500, 500, d3dDevice, d3dContext);  //Dos primeros números son la escala del terreno 
-		skydome = new SkyDome(32, 32, 100.0f, &d3dDevice, &d3dContext, L"SkyDome12.png");  // skydome cambiado
+		//terreno = new TerrenoRR(500, 500, d3dDevice, d3dContext);  //Dos primeros números son la escala del terreno
+		terreno = new TerrenoRR(L"ArenaB4.jpg", L"ArenaB4_spec.jpg", L"ArenaB4_normal.jpg",
+			L"ArenaB1.jpg", L"ArenaB1_spec.jpg", L"ArenaB1_norm.jpg",
+			L"ArenaB3.jpg", L"ArenaB3_spec.jpg", L"ArenaB3_normal.jpg",
+			L"Crater.jpg", 500, 500, d3dDevice, d3dContext);
+		skydome = new SkyDome(32, 32, 100.0f, &d3dDevice, &d3dContext, L"SkyDome12.png", L"SkyDome8.png", L"SkyDome.png");  // skydome cambiado
+		oasis = new BillboardRR(L"Assets/Billboards/water.jpg", L"Assets/Billboards/waterDUDV.png", d3dDevice, d3dContext, 200, true);
+
+		levelTime = new Tiempo(0.0f, 600, 0.01);
+		//skydome->setDesvanecido(levelTime->getDesvanecido());	
+		//skydome->setDesvanecido(0.0f, 600, 0.01);
 
 		billCargaFuego();
 		billboard = new BillboardRR(L"Assets/Billboards/fuego-anim.png", L"Assets/Billboards/fuego-anim-normal.png", d3dDevice, d3dContext, 5);
@@ -106,9 +136,9 @@ public:
 		
 		prota = new ModeloRR(d3dDevice, d3dContext, "Assets/CorotSnake/Corot.obj", L"Assets/CorotSnake/AlbedoCorot.jpg", L"Assets/CorotSnake/MetallicCorot.jpg", 10, 0);
 		nave = new ModeloRR(d3dDevice, d3dContext, "Assets/Nave/Nave.obj", L"Assets/Nave/ColorNave.png", L"Assets/Nave/MetallicNave.png", 15, 0);
-		hangar = new ModeloRR(d3dDevice, d3dContext, "Assets/Hangar/Hangar.obj", L"Assets/Hangar/HangarColor.jpg", L"Assets/Hangar/HangarRough.jpg", 0, 3); //Metallic o Rough se ven bien
-		vivienda = new ModeloRR(d3dDevice, d3dContext, "Assets/Vivienda/Vivienda2.obj", L"Assets/Vivienda/ViviendaColor.png", L"Assets/Vivienda/ViviendaRough.png", 140, 8);
-		vivienda2 = new ModeloRR(d3dDevice, d3dContext, "Assets/Vivienda/Laberinto2.obj", L"Assets/Vivienda/Laberinto2_Color.png", L"Assets/Vivienda/Laberinto2_Specular.png", -80, 8);
+		hangar = new ModeloRR(d3dDevice, d3dContext, "Assets/Hangar/nuevoHangar.obj", L"Assets/Hangar/HangarColor.jpg", L"Assets/Hangar/HangarRough.jpg", 75, -140); //Metallic o Rough se ven bien
+		vivienda = new ModeloRR(d3dDevice, d3dContext, "Assets/NewVivienda/Vivienda4.obj", L"Assets/NewVivienda/lambert12_Base_Color.png", L"Assets/NewVivienda/lambert12_Roughness.png", 140, 150);
+		vivienda2 = new ModeloRR(d3dDevice, d3dContext, "Assets/Vivienda/Laberinto2.obj", L"Assets/Vivienda/Laberinto2_Color.png", L"Assets/Vivienda/Laberinto2_Specular.png", -125, -75);
 		cheep = new ModeloRR(d3dDevice, d3dContext, "Assets/Auto/Cheep.obj", L"Assets/Auto/Cheep.jpg", L"Assets/Auto/Imagen1.jpg", 0, -30);
 		sandman = new ModeloRR(d3dDevice, d3dContext, "Assets/SandMan/SandMan.obj", L"Assets/SandMan/SandManColor.png", L"Assets/SandMan/SandManSpecular2.png", 0, -60);
 		skeleton = new ModeloRR(d3dDevice, d3dContext, "Assets/Skeleton/Skeleton.obj", L"Assets/Skeleton/SkeletonColor.png", L"Assets/Skeleton/lambert2_Height.png", -10, -60);
@@ -282,6 +312,8 @@ public:
 	
 	void Render(void)
 	{
+		//levelTime->updateTiempo();    checar si crear una nueva funcion update (minuto 1:50)
+		pintar();
 		rotCam += izqder;
 		float sphere[3] = { 0,0,0 };
 		float prevPos[3] = { camara->posCam.x, camara->posCam.z, camara->posCam.z };
@@ -292,9 +324,29 @@ public:
 		if( d3dContext == 0 )
 			return;
 
+		if (camara->posCam.x > 240) {
+			camara->posCam = camara->pastCam;
+		}
+		else if (camara->posCam.x < -240) {
+			camara->posCam = camara->pastCam;
+		}
+		else if (camara->posCam.z < -240) {
+			camara->posCam = camara->pastCam;
+		}
+		else if (camara->posCam.z > 240) {
+			camara->posCam = camara->pastCam;
+		}
+
 		float clearColor[4] = { 0, 0, 0, 1.0f };
 		d3dContext->ClearRenderTargetView( backBufferTarget, clearColor );
 		d3dContext->ClearDepthStencilView( depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0 );
+
+		/*if (camaraTipo == true) {
+			camara->posCam.y = terreno->Superficie(camara->posCam.x, camara->posCam.z) + 15;
+		}
+		else if (camaraTipo == false) {
+			camara->posCam3P.y = terreno->Superficie(camara->posCam.x, camara->posCam.z) + 20;
+		}*/
 
 		camara->posCam.y = terreno->Superficie(camara->posCam.x, camara->posCam.z) + 15;
 		camara->posCam3P.y = terreno->Superficie(camara->posCam.x, camara->posCam.z) + 20; //altura de la camara en tercera persona
@@ -306,14 +358,21 @@ public:
 		float camPosXZ[2] = { camara->posCam.x, camara->posCam.z };
 
 		TurnOffDepth();
-		skydome->Render(camara->posCam);
+		skydome->Render(camara->posCam, contadorGLSL);
 		TurnOnDepth();
-		terreno->Draw(camara->vista, camara->proyeccion);
+		//terreno->Draw(camara->vista, camara->proyeccion);
+		terreno->Draw(camara->vista, camara->proyeccion, luzAmbiental, luzDifusa, luzEspecular, 10, 1, 0, dirluz);//ought to change
 		//TurnOnAlphaBlending();
 		billboard->Draw(camara->vista, camara->proyeccion, camara->posCam,
 			-11, -78, 4, 5, uv1, uv2, uv3, uv4, frameBillboard, true);
-
+			
 		//TurnOffAlphaBlending();
+
+		static float oleaje = 0;
+		oleaje += 0.0001;
+		oasis->posx = -130;
+		oasis->posz = 175;
+		oasis->DrawWater(camara->vista, camara->proyeccion, camara->posCam, terreno->Superficie(100, 20) + 12, oleaje);
 
 		palma->Draw(camara->vista, camara->proyeccion, camara->posCam, 75, 150, terreno->Superficie(75, 150) -13, 50, uv1, uv2, uv3, uv4, frameBillboard, false);
 		palma2->Draw(camara->vista, camara->proyeccion, camara->posCam, 25, 150, terreno->Superficie(25, 150) - 9, 35, uv1, uv2, uv3, uv4, frameBillboard, false);
@@ -322,21 +381,50 @@ public:
 		cactus->Draw(camara->vista, camara->proyeccion, camara->posCam, 150, -150, terreno->Superficie(150, -150) - 4, 15, uv1, uv2, uv3, uv4, frameBillboard, false);
 		cactus2->Draw(camara->vista, camara->proyeccion, camara->posCam, -100, -150, terreno->Superficie(-100, -150) - 4, 15, uv1, uv2, uv3, uv4, frameBillboard, false);
 
-		prota->setPosX(camara->hdveo.x);
-		prota->setPosZ(camara->hdveo.z);                                                                                         //xm_pi
-		prota->Draw(camara->vista, camara->proyeccion, terreno->Superficie(prota->getPosX(), prota->getPosZ()) + 2.5, camara->posCam, 10.0f, rotCam + XM_PI, 'Y', 1, camaraTipo, true);
+		//prota->setPosX(camara->hdveo.x);
+		//prota->setPosZ(camara->hdveo.z);                                                                                         //xm_pi
+		//prota->Draw(camara->vista, camara->proyeccion, terreno->Superficie(prota->getPosX(), prota->getPosZ()) + 2.5, camara->posCam, 10.0f, rotCam + XM_PI, 'Y', 1, camaraTipo, true);
 
-		/*nave->setPosX(camara->hdveo.x);
+		nave->setPosX(camara->hdveo.x);
 		nave->setPosZ(camara->hdveo.z);
-		nave->Draw(camara->vista, camara->proyeccion, terreno->Superficie(nave->getPosX(), nave->getPosZ()), camara->posCam, 10.0f, rotCam + XM_PI, 'Y', 3, camaraTipo, true);*/
+		nave->Draw(camara->vista, camara->proyeccion, 15, terreno->Superficie(nave->getPosX(), nave->getPosZ()), 0, camara->posCam, 10.0f, rotCam + XM_PI, 'Y', 3, camaraTipo, true);
 		
-		hangar->Draw(camara->vista, camara->proyeccion, terreno->Superficie(0, 3), camara->posCam, 10.0f, 0, 'A', 9.0, camaraTipo, false); //último valor es la escala
-		vivienda->Draw(camara->vista, camara->proyeccion, terreno->Superficie(140, 8), camara->posCam, 10.0f, 0, 'A', 1, camaraTipo, false);
-		vivienda2->Draw(camara->vista, camara->proyeccion, terreno->Superficie(-80, 8), camara->posCam, 10.0f, 0, 'A', 1, camaraTipo, false);
-		//cheep->Draw(camara->vista, camara->proyeccion, terreno->Superficie(0, -30), camara->posCam, 1.0f, 0, 'A', 5.0, camaraTipo, false);
-		sandman->Draw(camara->vista, camara->proyeccion, terreno->Superficie(0, -60), camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
-		skeleton->Draw(camara->vista, camara->proyeccion, terreno->Superficie(-10, -60), camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
-		                                                                                        //specular //cambiar letra //escala
+		hangar->Draw(camara->vista, camara->proyeccion, 75, terreno->Superficie(75, -140), -140, camara->posCam, 10.0f, 0, 'A', 9.0, camaraTipo, false); //último valor es la escala
+		vivienda->Draw(camara->vista, camara->proyeccion, 140, terreno->Superficie(140, 150), 150, camara->posCam, 10.0f, 0, 'A', 1, camaraTipo, false);
+		vivienda2->Draw(camara->vista, camara->proyeccion, -125, terreno->Superficie(-125, -75), -75, camara->posCam, 10.0f, 0, 'A', 1, camaraTipo, false);
+		//cheep->Draw(camara->vista, camara->proyeccion, 0, terreno->Superficie(0, -30), -30, camara->posCam, 1.0f, 0, 'A', 5.0, camaraTipo, false);
+		sandman->Draw(camara->vista, camara->proyeccion, 0, terreno->Superficie(0, -60), -60, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+		skeleton->Draw(camara->vista, camara->proyeccion, -10, terreno->Superficie(-10, -60), -60, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+		 
+                                                                                      //specular //cambiar letra //escala
+
+
+	#pragma region Colisiones
+		if (camaraTipo == true) {
+			
+			float radioPared = 40;
+
+			if (isPointInsideSphere(camara->getPos(), vivienda->getSphere(radioPared, vivienda->getPosX(), vivienda->getPosZ()))) {
+				//status = true;
+				camara->posCam = camara->pastCam;
+			}
+
+			float radioPasillo = 70;
+
+			if (isPointInsideSphere(camara->getPos(), vivienda2->getSphere(radioPasillo, vivienda2->getPosX(), vivienda2->getPosZ()))) {
+				//status = true;
+				camara->posCam = camara->pastCam;
+			}
+
+			float radioHangar = 60;
+
+			if (isPointInsideSphere(camara->getPos(), hangar->getSphere(radioHangar, hangar->getPosX(), hangar->getPosZ()))) {
+				//status = true;
+				camara->posCam = camara->pastCam;
+			}
+		}
+	#pragma endregion
+
 		swapChain->Present( 1, 0 );
 	}
 
@@ -513,6 +601,72 @@ public:
 			uv3[j + 24].v = .75;
 			uv4[j + 24].v = 1;
 		}
+	}
+
+	void pintar() {
+
+		Contador++;
+
+		if (Contador % 20 == 0)
+		{
+
+			if (ContFramesMañana != 0 && ContFramesTarde != 0 && ContFramesNoche != 0) //cuenta cuantas horas para que sea tarde
+			{
+				ContFramesMañana--;
+				contadorGLSL++;
+			}
+
+			if (ContFramesTarde != 0 && ContFramesMañana == 0 && ContFramesNoche != 0)//cuenta cuantas horas para que sea noche
+			{
+				ContFramesTarde--;
+				contadorGLSL++;
+			}
+
+			if (ContFramesMañana == 0 && ContFramesTarde == 0 && ContFramesNoche != 0)//cuenta cuantas horas para que sea dia
+			{
+				ContFramesNoche--;
+				contadorGLSL++;
+			}
+
+			if (ContFramesNoche == 0)
+			{
+				ContFramesMañana = 80;
+				ContFramesNoche = 40;
+				ContFramesTarde = 80;
+				contadorGLSL = 0;
+			}
+		}
+
+		if (angle < 180.0f)
+		{
+			if (angle > 40.0f && angle < 140.0f)
+				angle += 0.005f;
+			else
+			{
+				angle += 0.010f;
+			}
+		}
+
+		if (angle >= 180.0f)
+			angle += 0.030f;
+
+
+		if (angle >= 360.0f)
+			angle = 0.0f;
+
+		//angulos de iluminacion
+		luzy = sin((angle * 41.2723) * PI / 180) * 350;
+		luzx = 0;
+		luzz = cos((angle * 41.2723) * PI / 180) * 350;
+
+		dirluz.x = luzx;
+		dirluz.y = luzy;
+		dirluz.z = luzz;
+
+		skydome->Update(camara->vista, camara->proyeccion);
+		TurnOffDepth();
+		skydome->Render(camara->posCam, contadorGLSL);
+		TurnOnDepth();
 	}
 
 };

@@ -3,6 +3,7 @@
 
 #include "DXRR.h"
 #include "GamePadRR.h"
+#include "Camara.h"
 
 #include <dinput.h>
 #include <xinput.h>
@@ -17,6 +18,7 @@
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 DXRR* dxrr;
+Camara* camera;
 GamePadRR* gamePad;
 tagPOINT initialPoint;
 tagPOINT actualPoint;
@@ -203,7 +205,12 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 		
 		m_pKeyboardDevice->GetDeviceState(sizeof(keyboardData), (void*)&keyboardData);
 
+		//if (keyboardData[DIK_R] & 0x80) {
+		//	//::MessageBox(hWnd, L"Presionaste la tecla R", L"Presionaste 1 tecla", 'a');
 
+		//	camera->posCam = dxrr->camara->posCam.x;
+		//	::MessageBox(hWnd, dxrr->camara->posCam.x, dxrr->camara->posCam.z, 'a');
+		//}
 
 		if (keyboardData[DIK_S] & 0x80) {
 			dxrr->vel = -5.f;
@@ -310,27 +317,27 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
 
 
-			if (GetButtonAPressed() && !anterior) {
+			//if (GetButtonAPressed() && !anterior) {
 
-				//Tercera persona
-				if (dxrr->camaraTipo) {
+			//	//Tercera persona
+			//	if (dxrr->camaraTipo) {
 
-					dxrr->camaraTipo = false;
+			//		dxrr->camaraTipo = false;
 
-				}
-				//Primera persona
-				else if (!dxrr->camaraTipo)
-				{
+			//	}
+			//	//Primera persona
+			//	else if (!dxrr->camaraTipo)
+			//	{
 
-					dxrr->camaraTipo = true;
+			//		dxrr->camaraTipo = true;
 
-				}
+			//	}
 
-				anterior = GetButtonAPressed();
-			}
-			else {
-				anterior = GetButtonAPressed();
-			}
+			//	anterior = GetButtonAPressed();
+			//}
+			//else {
+			//	anterior = GetButtonAPressed();
+			//}
 
 			/*if (gamePad->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A) {
 

@@ -9,7 +9,8 @@
 #include <D3Dcompiler.h>
 #include <d3dx10math.h>
 
-class TerrenoRR{
+
+class TerrenoRR {
 private:
 	struct VertexComponent
 	{
@@ -21,9 +22,50 @@ private:
 		D3DXVECTOR3 binormal;
 	};
 
+
+
+
+	///////////////////////////////////////////////////////MY NEW LIGHTS
+	struct Luces
+	{
+		D3DXVECTOR4 luzAmbiental;
+		D3DXVECTOR4 luzDifusa;
+		D3DXVECTOR4 luzEspecular;
+	};
+
+
+	struct Factores
+	{
+		float FAD;
+		float FA;
+		float FAS;
+		float PAD;
+	};
+
+	struct LuzDire
+	{
+		D3DXVECTOR3 LuzDir;
+		float Padd;
+	};
+
+	///////////////////////////////////////////////////////MY NEW LIGHTS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	struct VertexCollide
 	{
-		D3DXVECTOR3 pos;		
+		D3DXVECTOR3 pos;
 	};
 
 	ID3D11VertexShader* VertexShaderVS;
@@ -33,16 +75,43 @@ private:
 	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* indexBuffer;
 
-	ID3D11ShaderResourceView* colorMap;
+
+
+
+
+
+
+
+
+	/////////////////////////////////////////////////////////NEW VARIABLES XD
+	ID3D11ShaderResourceView* colorMap1;
+	ID3D11ShaderResourceView* specularMap1;
+	ID3D11ShaderResourceView* normalMap1;
 	ID3D11ShaderResourceView* colorMap2;
+	ID3D11ShaderResourceView* specularMap2;
+	ID3D11ShaderResourceView* normalMap2;
+	ID3D11ShaderResourceView* colorMap3;
+	ID3D11ShaderResourceView* specularMap3;
+	ID3D11ShaderResourceView* normalMap3;
 	ID3D11ShaderResourceView* blendMap;
 	ID3D11SamplerState* colorMapSampler;
+	/////////////////////////////////////////////////////////NEW VARIABLES XD
+
+
+
+
+
+
+
 
 	ID3D11Buffer* viewCB;
 	ID3D11Buffer* projCB;
 	ID3D11Buffer* worldCB;
 	D3DXMATRIX viewMatrix;
 	D3DXMATRIX projMatrix;
+	ID3D11Buffer* luces;
+	ID3D11Buffer* factores;
+	ID3D11Buffer* dirLuz;
 
 	int ancho, alto;
 	int anchoTexTerr, altoTexTerr;
@@ -58,7 +127,16 @@ private:
 	ID3D11DeviceContext* d3dContext;
 
 public:
-	TerrenoRR(int ancho, int alto, ID3D11Device* D3DDevice, ID3D11DeviceContext* D3DContext)
+
+
+
+
+
+
+
+	TerrenoRR(WCHAR* diffuseTex1, WCHAR* specularTex1, WCHAR* normalTex1, WCHAR* diffuseTex2, WCHAR* specularTex2,
+		WCHAR* normalTex2, WCHAR* diffuseTex3, WCHAR* specularTex3, WCHAR* normalTex3, WCHAR* heightTex,
+		int ancho, int alto, ID3D11Device* D3DDevice, ID3D11DeviceContext* D3DContext)
 	{
 		//copiamos el device y el device context a la clase terreno
 		d3dContext = D3DContext;
@@ -67,43 +145,13 @@ public:
 		this->ancho = ancho;
 		this->alto = alto;
 		//aqui cargamos las texturas de alturas y el cesped
-		CargaParametros(L"ArenaB4.jpg", L"Crater9.jpg", 30.0f);   //Assets/Nave/Nave.obj   //Primera Textura
+
+		CargaParametros(diffuseTex1, specularTex1, normalTex1, diffuseTex2, specularTex2, normalTex2, diffuseTex3, specularTex3,
+			normalTex3, heightTex, 50.0f);
 	}
 
-	~TerrenoRR()
-	{
-		//libera recursos
-		delete vertcol;
-		UnloadContent();
-	}
-
-	bool CompileD3DShader(WCHAR* filePath, char* entry, char* shaderModel, ID3DBlob** buffer)
-	{
-		//forma de compilar el shader
-		DWORD shaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
-
-		ID3DBlob* errorBuffer = 0;
-		HRESULT result;
-
-		result = D3DX11CompileFromFile(filePath, 0, 0, entry, shaderModel, shaderFlags,
-			0, 0, buffer, &errorBuffer, 0);
-		if(FAILED(result))
-		{
-			if(errorBuffer != 0)
-			{
-				OutputDebugStringA((char*)errorBuffer->GetBufferPointer());
-				errorBuffer->Release();
-			}
-			return false;
-		}
-
-		if(errorBuffer != 0)
-			errorBuffer->Release();
-
-		return true;
-	}
-
-	bool CargaParametros(WCHAR* diffuseTex, WCHAR* heightTex, float tile)
+	bool CargaParametros(WCHAR* diffuseTex1, WCHAR* specularTex1, WCHAR* normalTex1, WCHAR* diffuseTex2, WCHAR* specularTex2,
+		WCHAR* normalTex2, WCHAR* diffuseTex3, WCHAR* specularTex3, WCHAR* normalTex3, WCHAR* heightTex, float tile)
 	{
 		HRESULT d3dResult;
 		//carga el mapa de alturas
@@ -114,46 +162,46 @@ public:
 		//cargamos el shaders de vertices que esta contenido en el Shader.fx, note
 		//que VS_Main es el nombre del vertex shader en el shader, vsBuffer contendra
 		//al puntero del mismo
-		bool compileResult = CompileD3DShader( L"Shader.fx", "VS_Main", "vs_4_0", &vsBuffer ); //Creamos vertex shader
+		bool compileResult = CompileD3DShader(L"Shader.fx", "VS_Main", "vs_4_0", &vsBuffer);
 		//en caso de no poder cargarse ahi muere la cosa
-		if( compileResult == false )
+		if (compileResult == false)
 		{
 			return false;
 		}
-		
+
 		//aloja al shader en la memeoria del gpu o el cpu
-		d3dResult = d3dDevice->CreateVertexShader( vsBuffer->GetBufferPointer( ),
-			vsBuffer->GetBufferSize( ), 0, &VertexShaderVS);
+		d3dResult = d3dDevice->CreateVertexShader(vsBuffer->GetBufferPointer(),
+			vsBuffer->GetBufferSize(), 0, &VertexShaderVS);
 		//en caso de falla sale
-		if( FAILED( d3dResult ) )
+		if (FAILED(d3dResult))
 		{
 
-			if( vsBuffer )
-				vsBuffer->Release( );
+			if (vsBuffer)
+				vsBuffer->Release();
 
 			return false;
 		}
 
 		//lo nuevo, antes creabamos una estructura con la definicion del vertice, ahora creamos un mapa o layout
 		//de como queremos construir al vertice, esto es la definicion
-		D3D11_INPUT_ELEMENT_DESC solidColorLayout[] = //Los inputs
+		D3D11_INPUT_ELEMENT_DESC solidColorLayout[] =
 		{
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 			{ "TEXCOORD", 1, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 			{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 			{ "NORMAL", 1, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		    { "NORMAL", 2, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
+			{ "NORMAL", 2, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
 		};
 
-		unsigned int totalLayoutElements = ARRAYSIZE( solidColorLayout );
+		unsigned int totalLayoutElements = ARRAYSIZE(solidColorLayout);
 
-		d3dResult = d3dDevice->CreateInputLayout( solidColorLayout, totalLayoutElements,
-			vsBuffer->GetBufferPointer( ), vsBuffer->GetBufferSize( ), &inputLayout );
+		d3dResult = d3dDevice->CreateInputLayout(solidColorLayout, totalLayoutElements,
+			vsBuffer->GetBufferPointer(), vsBuffer->GetBufferSize(), &inputLayout);
 
-		vsBuffer->Release( );
+		vsBuffer->Release();
 
-		if( FAILED( d3dResult ) )
+		if (FAILED(d3dResult))
 		{
 			return false;
 		}
@@ -161,19 +209,19 @@ public:
 		ID3DBlob* psBuffer = 0;
 		// de los vertices pasamos al pixel shader, note que el nombre del shader es el mismo
 		//ahora buscamos al pixel shader llamado PS_Main
-		compileResult = CompileD3DShader( L"Shader.fx", "PS_Main", "ps_4_0", &psBuffer );  //Pixel shader
+		compileResult = CompileD3DShader(L"Shader.fx", "PS_Main", "ps_4_0", &psBuffer);
 
-		if( compileResult == false )
+		if (compileResult == false)
 		{
 			return false;
 		}
 		//ya compilado y sin error lo ponemos en la memoria
-		d3dResult = d3dDevice->CreatePixelShader( psBuffer->GetBufferPointer( ),
-			psBuffer->GetBufferSize( ), 0, &solidColorPS );
+		d3dResult = d3dDevice->CreatePixelShader(psBuffer->GetBufferPointer(),
+			psBuffer->GetBufferSize(), 0, &solidColorPS);
 
-		psBuffer->Release( );
+		psBuffer->Release();
 
-		if( FAILED( d3dResult ) )
+		if (FAILED(d3dResult))
 		{
 			return false;
 		}
@@ -197,44 +245,44 @@ public:
 		deltay = (float)alto / (float)altoTexTerr;
 		deltax = (float)ancho / (float)anchoTexTerr;
 
-		for(int x = 0; x < altoTexTerr; x++)
-		 {
-			 for (int y = 0; y < anchoTexTerr; y++)
-			 {
-				 int indiceArreglo = x * anchoTexTerr + y;
+		for (int x = 0; x < altoTexTerr; x++)
+		{
+			for (int y = 0; y < anchoTexTerr; y++)
+			{
+				int indiceArreglo = x * anchoTexTerr + y;
 
-				 // Se calculan los vertices 'x' y 'z'. 'Y' se saca del mapa de normales
-				 vertcol[indiceArreglo].pos.x = vertices[indiceArreglo].pos.x = deltax * y - anchof;
-				 vertcol[indiceArreglo].pos.y = vertices[indiceArreglo].pos.y = alturaData[x][y]/9.0;
-				 vertcol[indiceArreglo].pos.z = vertices[indiceArreglo].pos.z = deltay * x - altof;
-				 vertices[indiceArreglo].UV.x = y * du;
-				 vertices[indiceArreglo].UV.y = x * dv;
-				 vertices[indiceArreglo].BlendUV.x = y * blend_du;
-				 vertices[indiceArreglo].BlendUV.y = x * blend_dv;
-				 //note las operaciones matematicas empiezan con XM, son herencia del XNA
-				 vertices[indiceArreglo].normal = D3DXVECTOR3(0.0f , 0.0f , 0.0f);
-				 vertices[indiceArreglo].tangente = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-				 vertices[indiceArreglo].binormal = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-			 }
-		 }
+				// Se calculan los vertices 'x' y 'z'. 'Y' se saca del mapa de normales
+				vertcol[indiceArreglo].pos.x = vertices[indiceArreglo].pos.x = deltax * y - anchof;
+				vertcol[indiceArreglo].pos.y = vertices[indiceArreglo].pos.y = alturaData[x][y] / 3.0;
+				vertcol[indiceArreglo].pos.z = vertices[indiceArreglo].pos.z = deltay * x - altof;
+				vertices[indiceArreglo].UV.x = y * du;
+				vertices[indiceArreglo].UV.y = x * dv;
+				vertices[indiceArreglo].BlendUV.x = y * blend_du;
+				vertices[indiceArreglo].BlendUV.y = x * blend_dv;
+				//note las operaciones matematicas empiezan con XM, son herencia del XNA
+				vertices[indiceArreglo].normal = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+				vertices[indiceArreglo].tangente = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+				vertices[indiceArreglo].binormal = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+			}
+		}
 
 		//una vez creados los vertices generamos las normales
 		generaNormales(vertices);
 
 		//proceso de guardar el buffer de vertices para su uso en el render
 		D3D11_BUFFER_DESC vertexDesc;
-		ZeroMemory( &vertexDesc, sizeof( vertexDesc ) );
+		ZeroMemory(&vertexDesc, sizeof(vertexDesc));
 		vertexDesc.Usage = D3D11_USAGE_DEFAULT;
 		vertexDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		vertexDesc.ByteWidth = sizeof( VertexComponent ) * cuenta;
+		vertexDesc.ByteWidth = sizeof(VertexComponent) * cuenta;
 
 		D3D11_SUBRESOURCE_DATA resourceData;
-		ZeroMemory( &resourceData, sizeof( resourceData ) );
+		ZeroMemory(&resourceData, sizeof(resourceData));
 		resourceData.pSysMem = vertices;
 
-		d3dResult = d3dDevice->CreateBuffer( &vertexDesc, &resourceData, &vertexBuffer );
+		d3dResult = d3dDevice->CreateBuffer(&vertexDesc, &resourceData, &vertexBuffer);
 
-		if( FAILED( d3dResult ) )
+		if (FAILED(d3dResult))
 		{
 			MessageBox(0, L"Error", L"Error al crear vertex buffer", MB_OK);
 			return false;
@@ -245,17 +293,24 @@ public:
 		//creamos los indices para hacer el terreno
 		estableceIndices();
 		//crea los accesos de las texturas para los shaders 
-		d3dResult = D3DX11CreateShaderResourceViewFromFile( d3dDevice, diffuseTex, 0, 0, &colorMap, 0 ); //Textura1 
-		d3dResult = D3DX11CreateShaderResourceViewFromFile( d3dDevice, L"ArenaB3.jpg", 0, 0, &colorMap2, 0);  //Segunda Textura //arenatest2
-		d3dResult = D3DX11CreateShaderResourceViewFromFile( d3dDevice, L"Crater9.jpg", 0, 0, &blendMap, 0 );  //HighMap
+		d3dResult = D3DX11CreateShaderResourceViewFromFile(d3dDevice, diffuseTex1, 0, 0, &colorMap1, 0);
+		d3dResult = D3DX11CreateShaderResourceViewFromFile(d3dDevice, specularTex1, 0, 0, &specularMap1, 0);
+		d3dResult = D3DX11CreateShaderResourceViewFromFile(d3dDevice, normalTex1, 0, 0, &normalMap1, 0);
+		d3dResult = D3DX11CreateShaderResourceViewFromFile(d3dDevice, diffuseTex2, 0, 0, &colorMap2, 0);
+		d3dResult = D3DX11CreateShaderResourceViewFromFile(d3dDevice, specularTex2, 0, 0, &specularMap2, 0);
+		d3dResult = D3DX11CreateShaderResourceViewFromFile(d3dDevice, normalTex2, 0, 0, &normalMap2, 0);
+		d3dResult = D3DX11CreateShaderResourceViewFromFile(d3dDevice, diffuseTex3, 0, 0, &colorMap3, 0);
+		d3dResult = D3DX11CreateShaderResourceViewFromFile(d3dDevice, specularTex3, 0, 0, &specularMap3, 0);
+		d3dResult = D3DX11CreateShaderResourceViewFromFile(d3dDevice, normalTex3, 0, 0, &normalMap3, 0);
+		d3dResult = D3DX11CreateShaderResourceViewFromFile(d3dDevice, L"Blendingmap2.png", 0, 0, &blendMap, 0);
 
-		if( FAILED( d3dResult ) )
+		if (FAILED(d3dResult))
 		{
 			return false;
 		}
 		//aqui creamos el sampler
 		D3D11_SAMPLER_DESC colorMapDesc;
-		ZeroMemory( &colorMapDesc, sizeof(colorMapDesc) );
+		ZeroMemory(&colorMapDesc, sizeof(colorMapDesc));
 		colorMapDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 		colorMapDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 		colorMapDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -263,92 +318,283 @@ public:
 		colorMapDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 		colorMapDesc.MaxLOD = D3D11_FLOAT32_MAX;
 		//con la estructura de descripion creamos el sampler
-		d3dResult = d3dDevice->CreateSamplerState( &colorMapDesc, &colorMapSampler );
+		d3dResult = d3dDevice->CreateSamplerState(&colorMapDesc, &colorMapSampler);
 
-		if( FAILED( d3dResult ) )
+		if (FAILED(d3dResult))
 		{
 			return false;
 		}
 
 		//creamos los buffers para el shader para poder pasarle las matrices
 		D3D11_BUFFER_DESC constDesc;
-		ZeroMemory( &constDesc, sizeof( constDesc ) );
+		ZeroMemory(&constDesc, sizeof(constDesc));
 		constDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		constDesc.ByteWidth = sizeof( D3DXMATRIX );
+		constDesc.ByteWidth = sizeof(D3DXMATRIX);
 		constDesc.Usage = D3D11_USAGE_DEFAULT;
 		//de vista
-		d3dResult = d3dDevice->CreateBuffer( &constDesc, 0, &viewCB );
+		d3dResult = d3dDevice->CreateBuffer(&constDesc, 0, &viewCB);
 
-		if( FAILED( d3dResult ) )
+		if (FAILED(d3dResult))
 		{
 			return false;
 		}
 		//de proyeccion
-		d3dResult = d3dDevice->CreateBuffer( &constDesc, 0, &projCB );
+		d3dResult = d3dDevice->CreateBuffer(&constDesc, 0, &projCB);
 
-		if( FAILED( d3dResult ) )
+		if (FAILED(d3dResult))
 		{
 			return false;
 		}
 		//de mundo
-		d3dResult = d3dDevice->CreateBuffer( &constDesc, 0, &worldCB );
+		d3dResult = d3dDevice->CreateBuffer(&constDesc, 0, &worldCB);
 
-		if( FAILED( d3dResult ) )
+		if (FAILED(d3dResult))
 		{
 			return false;
 		}
+
+		//Create the buffer for the light and stuff
+		D3D11_BUFFER_DESC constDesc4;
+		ZeroMemory(&constDesc4, sizeof(constDesc4)); //to clean
+		constDesc4.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		constDesc4.ByteWidth = sizeof(Luces);
+		constDesc4.Usage = D3D11_USAGE_DEFAULT;
+		d3dResult = d3dDevice->CreateBuffer(&constDesc4, 0, &luces);
+
+		D3D11_BUFFER_DESC constDesc5;
+		ZeroMemory(&constDesc5, sizeof(constDesc5));
+		constDesc5.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		constDesc5.ByteWidth = sizeof(Factores);
+		constDesc5.Usage = D3D11_USAGE_DEFAULT;
+		d3dResult = d3dDevice->CreateBuffer(&constDesc5, 0, &factores);
+
+		D3D11_BUFFER_DESC constDesc6;
+		ZeroMemory(&constDesc6, sizeof(constDesc6));
+		constDesc6.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		constDesc6.ByteWidth = sizeof(LuzDire);
+		constDesc6.Usage = D3D11_USAGE_DEFAULT;
+		d3dResult = d3dDevice->CreateBuffer(&constDesc6, 0, &dirLuz);
 
 		//posicion de la camara
 		D3DXVECTOR3 eye = D3DXVECTOR3(0.0f, 100.0f, 200.0f);
 		//a donde ve
 		D3DXVECTOR3 target = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-		D3DXVECTOR3 up = D3DXVECTOR3(0.0f, 1.0f, 0.0f);   
+		D3DXVECTOR3 up = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 
 		//crea la matriz de vista
 		D3DXMatrixLookAtLH(&viewMatrix, &eye, &target, &up);
 		//la de proyeccion
-		D3DXMatrixPerspectiveFovLH( &projMatrix, D3DX_PI/4.0, ancho / alto, 0.01f, 1000.0f );
+		D3DXMatrixPerspectiveFovLH(&projMatrix, D3DX_PI / 4.0, ancho / alto, 0.01f, 1000.0f);
 		//las transpone para acelerar la multiplicacion
-		D3DXMatrixTranspose( &viewMatrix, &viewMatrix );
-		D3DXMatrixTranspose( &projMatrix, &projMatrix );
+		D3DXMatrixTranspose(&viewMatrix, &viewMatrix);
+		D3DXMatrixTranspose(&projMatrix, &projMatrix);
+
+		return true;
+	}
+
+	void Draw(D3DXMATRIX vista, D3DXMATRIX proyeccion, D3DXVECTOR4 ambiental, D3DXVECTOR4 difusa, D3DXVECTOR4 especular
+		, float fad, float fa, float fas, D3DXVECTOR3 luzdir)
+	{
+		static float rotation = 0.0f;
+		rotation += 0.01;
+
+		//paso de datos, es decir cuanto es el ancho de la estructura
+		unsigned int stride = sizeof(VertexComponent);
+		unsigned int offset = 0;
+
+		//define la estructura del vertice a traves de layout
+		d3dContext->IASetInputLayout(inputLayout);
+
+		//define con que buffer trabajara
+		d3dContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+		//define con buffer de indices trabajara
+		d3dContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+		//define la forma de conexion de los vertices
+		d3dContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		//Establece el vertex y pixel shader que utilizara
+		d3dContext->VSSetShader(VertexShaderVS, 0, 0);
+		d3dContext->PSSetShader(solidColorPS, 0, 0);
+		//pasa lo sbuffers al shader
+		d3dContext->PSSetShaderResources(0, 1, &colorMap1);
+		d3dContext->PSSetShaderResources(1, 1, &colorMap2);
+		d3dContext->PSSetShaderResources(2, 1, &colorMap3);
+
+		d3dContext->PSSetShaderResources(3, 1, &specularMap1);
+		d3dContext->PSSetShaderResources(4, 1, &specularMap2);
+		d3dContext->PSSetShaderResources(5, 1, &specularMap3);
+
+		d3dContext->PSSetShaderResources(6, 1, &normalMap1);
+		d3dContext->PSSetShaderResources(7, 1, &normalMap2);
+		d3dContext->PSSetShaderResources(8, 1, &normalMap3);
+		d3dContext->PSSetShaderResources(9, 1, &blendMap);
+		d3dContext->PSSetSamplers(0, 1, &colorMapSampler);
+
+		//mueve la camara
+		D3DXMATRIX rotationMat;
+		D3DXMatrixRotationYawPitchRoll(&rotationMat, 0.0f, 0.0f, 0.0f);
+		D3DXMATRIX translationMat;
+		D3DXMatrixTranslation(&translationMat, 0.0f, 0.0f, 6.0f);
+		D3DXMATRIX ry;
+		D3DXMatrixRotationY(&ry, 0.01);
+		viewMatrix *= ry;
+
+		D3DXMATRIX worldMat = rotationMat;//= rotationMat * translationMat;
+		D3DXMatrixTranspose(&worldMat, &worldMat);
+		//actualiza los buffers del shader
+		d3dContext->UpdateSubresource(worldCB, 0, 0, &worldMat, 0, 0);
+		d3dContext->UpdateSubresource(viewCB, 0, 0, &vista, 0, 0);
+		d3dContext->UpdateSubresource(projCB, 0, 0, &proyeccion, 0, 0);
+		//le pasa al shader los buffers
+		d3dContext->VSSetConstantBuffers(0, 1, &worldCB);
+		d3dContext->VSSetConstantBuffers(1, 1, &viewCB);
+		d3dContext->VSSetConstantBuffers(2, 1, &projCB);
+		d3dContext->PSSetConstantBuffers(3, 1, &luces);
+		d3dContext->PSSetConstantBuffers(4, 1, &factores);
+		d3dContext->PSSetConstantBuffers(5, 1, &dirLuz);
+		//cantidad de trabajos
+		int cuenta = (anchoTexTerr - 1) * (altoTexTerr - 1) * 6;
+		d3dContext->DrawIndexed(cuenta, 0, 0);
+
+
+		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		Luces auxLuces;
+		auxLuces.luzAmbiental = ambiental;
+		auxLuces.luzDifusa = difusa;
+		auxLuces.luzEspecular = especular;
+
+		Factores auxFactores;
+		auxFactores.FA = fa;
+		auxFactores.FAD = fad;
+		auxFactores.FAS = fas;
+		auxFactores.PAD = 0.0f;
+
+		LuzDire auxDirLuz;
+		auxDirLuz.LuzDir = luzdir;
+		auxDirLuz.Padd = 0.0f;
+
+		auxLuces.luzDifusa = D3DXVECTOR4(1, clamp(auxFactores.FAD, 0.6f, 1.0f), clamp(auxFactores.FAD, 0.6f, 1.0f), 1);
+		auxLuces.luzAmbiental = D3DXVECTOR4(1, clamp(auxFactores.FAD, 0.6f, 1.0f), clamp(auxFactores.FAD, 0.6f, 1.0f), 1);
+		auxLuces.luzEspecular = D3DXVECTOR4(1, clamp(auxFactores.FAD, 0.6f, 1.0f), clamp(auxFactores.FAD, 0.6f, 1.0f), 1);
+
+		d3dContext->UpdateSubresource(luces, 0, 0, &auxLuces, 0, 0);
+		d3dContext->UpdateSubresource(factores, 0, 0, &auxFactores, 0, 0);
+		d3dContext->UpdateSubresource(dirLuz, 0, 0, &auxDirLuz, 0, 0);
+	}
+
+
+
+
+
+
+
+	float clamp(float n, float lower, float upper)
+	{
+		if (n > lower && n < upper)
+			return n;
+		if (n > upper)
+			return upper;
+		if (n < lower)
+			return lower;
+	}
+
+
+
+
+
+	~TerrenoRR()
+	{
+		//libera recursos
+		delete vertcol;
+		UnloadContent();
+	}
+
+	bool CompileD3DShader(WCHAR* filePath, char* entry, char* shaderModel, ID3DBlob** buffer)
+	{
+		//forma de compilar el shader
+		DWORD shaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+
+		ID3DBlob* errorBuffer = 0;
+		HRESULT result;
+
+		result = D3DX11CompileFromFile(filePath, 0, 0, entry, shaderModel, shaderFlags,
+			0, 0, buffer, &errorBuffer, 0);
+		if (FAILED(result))
+		{
+			if (errorBuffer != 0)
+			{
+				OutputDebugStringA((char*)errorBuffer->GetBufferPointer());
+				errorBuffer->Release();
+			}
+			return false;
+		}
+
+		if (errorBuffer != 0)
+			errorBuffer->Release();
 
 		return true;
 	}
 
 	bool UnloadContent()
 	{
-		if(colorMapSampler)
+		if (colorMapSampler)
 			colorMapSampler->Release();
-		if(colorMap)
-			colorMap->Release();
-		if(VertexShaderVS)
+		if (colorMap1)
+			colorMap1->Release();
+		if (colorMap2)
+			colorMap2->Release();
+		if (colorMap3)
+			colorMap3->Release();
+		if (specularMap1)
+			specularMap1->Release();
+		if (specularMap2)
+			specularMap2->Release();
+		if (specularMap3)
+			specularMap3->Release();
+		if (normalMap1)
+			normalMap1->Release();
+		if (normalMap2)
+			normalMap2->Release();
+		if (normalMap3)
+			normalMap3->Release();
+		if (VertexShaderVS)
 			VertexShaderVS->Release();
-		if(solidColorPS)
+		if (solidColorPS)
 			solidColorPS->Release();
-		if(inputLayout)
+		if (inputLayout)
 			inputLayout->Release();
-		if(vertexBuffer)
+		if (vertexBuffer)
 			vertexBuffer->Release();
-		if(viewCB)
+		if (viewCB)
 			viewCB->Release();
-		if(projCB)
+		if (projCB)
 			projCB->Release();
-		if(worldCB)
+		if (worldCB)
 			worldCB->Release();
-		if(heightMap)
+		if (heightMap)
 			heightMap->Release();
-		if(alturaData)
+		if (alturaData)
 		{
-			for( int i = 0 ; i < altoTexTerr ; i++ )
+			for (int i = 0; i < altoTexTerr; i++)
 			{
 				delete alturaData[i];
 			}
-			delete alturaData ;
+			delete alturaData;
 		}
 		alturaData = 0;
 
 		colorMapSampler = 0;
-		colorMap = 0;
+		colorMap1 = 0;
+		colorMap2 = 0;
+		colorMap3 = 0;
+		specularMap1 = 0;
+		specularMap2 = 0;
+		specularMap3 = 0;
+		normalMap1 = 0;
+		normalMap2 = 0;
+		normalMap3 = 0;
+
 		VertexShaderVS = 0;
 		solidColorPS = 0;
 		inputLayout = 0;
@@ -361,60 +607,6 @@ public:
 
 	void Update(float dt)
 	{
-	}
-
-	void Draw(D3DXMATRIX vista, D3DXMATRIX proyeccion)
-	{
-		static float rotation = 0.0f;
-		rotation += 0.01;		
-
-		//paso de datos, es decir cuanto es el ancho de la estructura
-		unsigned int stride = sizeof( VertexComponent );
-		unsigned int offset = 0;
-
-		//define la estructura del vertice a traves de layout
-		d3dContext->IASetInputLayout( inputLayout );
-		
-		//define con que buffer trabajara
-		d3dContext->IASetVertexBuffers( 0, 1, &vertexBuffer, &stride, &offset );
-		//define con buffer de indices trabajara
-		d3dContext->IASetIndexBuffer( indexBuffer, DXGI_FORMAT_R32_UINT, 0 );
-		//define la forma de conexion de los vertices
-		d3dContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
-
-		//Establece el vertex y pixel shader que utilizara
-		d3dContext->VSSetShader( VertexShaderVS, 0, 0 );
-		d3dContext->PSSetShader( solidColorPS, 0, 0 );
-		//pasa lo sbuffers al shader
-		d3dContext->PSSetShaderResources( 0, 1, &colorMap );
-		d3dContext->PSSetShaderResources( 1, 1, &colorMap2 );
-		d3dContext->PSSetShaderResources( 2, 1, &blendMap );
-		d3dContext->PSSetSamplers( 0, 1, &colorMapSampler );
-
-		//mueve la camara
-		D3DXMATRIX rotationMat;
-		D3DXMatrixRotationYawPitchRoll( &rotationMat, 0.0f, 0.0f, 0.0f );
-		D3DXMATRIX translationMat;
-		D3DXMatrixTranslation( &translationMat, 0.0f, 0.0f, 6.0f );
-		D3DXMATRIX ry;
-		D3DXMatrixRotationY(&ry,0.01);
-		viewMatrix *= ry;
-    
-		D3DXMATRIX worldMat = rotationMat;//= rotationMat * translationMat;
-		D3DXMatrixTranspose( &worldMat, &worldMat );
-		//actualiza los buffers del shader
-		d3dContext->UpdateSubresource( worldCB, 0, 0, &worldMat, 0, 0 );
-		d3dContext->UpdateSubresource( viewCB, 0, 0, &vista, 0, 0 );
-		d3dContext->UpdateSubresource( projCB, 0, 0, &proyeccion, 0, 0 );
-		//le pasa al shader los buffers
-		d3dContext->VSSetConstantBuffers( 0, 1, &worldCB );
-		d3dContext->VSSetConstantBuffers( 1, 1, &viewCB );
-		d3dContext->VSSetConstantBuffers( 2, 1, &projCB );
-		//cantidad de trabajos
-		int cuenta = (anchoTexTerr - 1) * (altoTexTerr - 1) * 6;
-		d3dContext->DrawIndexed( cuenta, 0, 0 );
-
-		
 	}
 
 private:
@@ -447,10 +639,10 @@ private:
 		altoTexTerr = (int)texInfo.Height;
 		//generamos el espacio para contener los pixeles de altura
 		//como un arreglo de punteros de tipo byte
-		alturaData = new BYTE*[altoTexTerr];
+		alturaData = new BYTE * [altoTexTerr];
 
 		//generamos el espacio en cada puntero de cada fila de bytes
-		for( int i = 0 ; i < anchoTexTerr ; i++ )
+		for (int i = 0; i < anchoTexTerr; i++)
 			alturaData[i] = new BYTE[anchoTexTerr];
 		//del archivo de la textura genera el banco de acceso a los datos del  pixel
 		resultado = D3DX11CreateTextureFromFile(d3dDevice, heightTex, &texDesc, NULL, &heightMap, NULL);
@@ -458,13 +650,13 @@ private:
 		D3D11_MAPPED_SUBRESOURCE subResrc;
 		//permite acceso a los datos de las texturas sin permitir que el GPU lo interrumpa
 		resultado = d3dContext->Map(heightMap, 0, D3D11_MAP_READ, NULL, &subResrc);
-		BYTE *pixel = reinterpret_cast<BYTE*>(subResrc.pData);
+		BYTE* pixel = reinterpret_cast<BYTE*>(subResrc.pData);
 		//cargamos el dato del mapa de altura considerando un solo canal
-		for(UINT x = 0; x < altoTexTerr; x++)
+		for (UINT x = 0; x < altoTexTerr; x++)
 		{
-			for(UINT y=0; y<anchoTexTerr; y++)
+			for (UINT y = 0; y < anchoTexTerr; y++)
 			{
-				BYTE pPixel = pixel[(x * anchoTexTerr + y)*4];
+				BYTE pPixel = pixel[(x * anchoTexTerr + y) * 4];
 				alturaData[x][y] = pPixel;
 			}
 		}
@@ -479,51 +671,51 @@ private:
 		int cuenta = (anchoTexTerr - 1) * (altoTexTerr - 1) * 6;
 		indices = new UINT[cuenta];
 
-		 int counter = 0;
-		 for(int y = 0; y < altoTexTerr-1; y++)
-		 {
-			 for(int x=0; x < anchoTexTerr-1; x++)
-			 {
-				 int lowerLeft = y * anchoTexTerr + x;
-				 int lowerRight = y * anchoTexTerr + (x + 1);
-				 int topLeft = (y + 1) * anchoTexTerr + x;
-				 int topRight = (y + 1) * anchoTexTerr + (x + 1);
+		int counter = 0;
+		for (int y = 0; y < altoTexTerr - 1; y++)
+		{
+			for (int x = 0; x < anchoTexTerr - 1; x++)
+			{
+				int lowerLeft = y * anchoTexTerr + x;
+				int lowerRight = y * anchoTexTerr + (x + 1);
+				int topLeft = (y + 1) * anchoTexTerr + x;
+				int topRight = (y + 1) * anchoTexTerr + (x + 1);
 
-				 indices[counter++] = lowerLeft;
-				 indices[counter++] = topLeft;
-				 indices[counter++] = lowerRight;
+				indices[counter++] = lowerLeft;
+				indices[counter++] = topLeft;
+				indices[counter++] = lowerRight;
 
-				 indices[counter++] = lowerRight; 
-				 indices[counter++] = topLeft;
-				 indices[counter++] = topRight;
-			 }
-		 }
+				indices[counter++] = lowerRight;
+				indices[counter++] = topLeft;
+				indices[counter++] = topRight;
+			}
+		}
 
-		 D3D11_BUFFER_DESC indexDesc;
-		 ZeroMemory( &indexDesc, sizeof( indexDesc ) );
-		 indexDesc.Usage = D3D11_USAGE_DEFAULT;
-		 indexDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-		 indexDesc.ByteWidth = sizeof( INT ) * cuenta;
-		 indexDesc.CPUAccessFlags = 0;
+		D3D11_BUFFER_DESC indexDesc;
+		ZeroMemory(&indexDesc, sizeof(indexDesc));
+		indexDesc.Usage = D3D11_USAGE_DEFAULT;
+		indexDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+		indexDesc.ByteWidth = sizeof(INT) * cuenta;
+		indexDesc.CPUAccessFlags = 0;
 
-		 D3D11_SUBRESOURCE_DATA resourceData;
-		 ZeroMemory( &resourceData, sizeof( resourceData ) );
-		 resourceData.pSysMem = indices;
+		D3D11_SUBRESOURCE_DATA resourceData;
+		ZeroMemory(&resourceData, sizeof(resourceData));
+		resourceData.pSysMem = indices;
 
-		 d3dResult = d3dDevice->CreateBuffer( &indexDesc, &resourceData, &indexBuffer );
+		d3dResult = d3dDevice->CreateBuffer(&indexDesc, &resourceData, &indexBuffer);
 
-		 if( FAILED( d3dResult ) )
-		 {
-			 return;
-		 }
-		 delete indices;
+		if (FAILED(d3dResult))
+		{
+			return;
+		}
+		delete indices;
 	}
 
 	void generaNormales(VertexComponent* vertices)
 	{
-		for(int i=0; i<altoTexTerr-1;i++)
+		for (int i = 0; i < altoTexTerr - 1; i++)
 		{
-			for(int j=0;j<anchoTexTerr-1;j++)
+			for (int j = 0; j < anchoTexTerr - 1; j++)
 			{
 				int bottomleft = i * anchoTexTerr + j;
 				int topright = (i + 1) * anchoTexTerr + (j + 1);
@@ -538,14 +730,14 @@ private:
 				D3DXVECTOR3 sumNor;
 				sumNor = T1;
 				vertices[bottomleft].normal = D3DXVECTOR3(vertices[bottomleft].normal.x + sumNor.x,
-													   vertices[bottomleft].normal.y + sumNor.y,
-													   vertices[bottomleft].normal.z + sumNor.z);
+					vertices[bottomleft].normal.y + sumNor.y,
+					vertices[bottomleft].normal.z + sumNor.z);
 				vertices[topleft].normal = D3DXVECTOR3(vertices[topleft].normal.x + sumNor.x,
-													vertices[topleft].normal.y + sumNor.y,
-													vertices[topleft].normal.z + sumNor.z);
+					vertices[topleft].normal.y + sumNor.y,
+					vertices[topleft].normal.z + sumNor.z);
 				vertices[bottomright].normal = D3DXVECTOR3(vertices[bottomright].normal.x + sumNor.x,
-													    vertices[bottomright].normal.y + sumNor.y,
-													    vertices[bottomright].normal.z + sumNor.z);
+					vertices[bottomright].normal.y + sumNor.y,
+					vertices[bottomright].normal.z + sumNor.z);
 
 				D3DXVECTOR3 tang;
 				tang = vertices[bottomright].pos - vertices[bottomleft].pos;
@@ -559,14 +751,14 @@ private:
 				sumNor = T1;
 
 				vertices[topright].normal = D3DXVECTOR3(vertices[topright].normal.x + sumNor.x,
-													 vertices[topright].normal.y + sumNor.y,
-													 vertices[topright].normal.z + sumNor.z);
+					vertices[topright].normal.y + sumNor.y,
+					vertices[topright].normal.z + sumNor.z);
 				vertices[topleft].normal = D3DXVECTOR3(vertices[topleft].normal.x + sumNor.x,
-													vertices[topleft].normal.y + sumNor.y,
-													vertices[topleft].normal.z + sumNor.z);
+					vertices[topleft].normal.y + sumNor.y,
+					vertices[topleft].normal.z + sumNor.z);
 				vertices[bottomright].normal = D3DXVECTOR3(vertices[bottomright].normal.x + sumNor.x,
-													    vertices[bottomright].normal.y + sumNor.y,
-													    vertices[bottomright].normal.z + sumNor.z);
+					vertices[bottomright].normal.y + sumNor.y,
+					vertices[bottomright].normal.z + sumNor.z);
 
 				tang = vertices[topright].pos - vertices[topleft].pos;
 				vertices[topright].tangente += tang;
@@ -575,7 +767,7 @@ private:
 			}
 		}
 
-		for(int i=0; i < anchoTexTerr * altoTexTerr; i++)
+		for (int i = 0; i < anchoTexTerr * altoTexTerr; i++)
 		{
 			D3DXVECTOR3 normal = vertices[i].normal;
 			D3DXVec3Normalize(&normal, &normal);
@@ -590,7 +782,7 @@ private:
 		{
 			D3DXVECTOR3 binorm;
 			D3DXVec3Cross(&binorm, &vertices[i].tangente, &vertices[i].normal);
-			D3DXVec3Normalize(&binorm, &binorm);			
+			D3DXVec3Normalize(&binorm, &binorm);
 			vertices[i].binormal = binorm;
 		}
 	}
@@ -603,12 +795,12 @@ public:
 		D3DXVECTOR3 p1 = D3DXVECTOR3(posx, 0, posz);
 		D3DXVECTOR3 p2 = D3DXVECTOR3(posx, 500, posz);
 
-		D3DXVECTOR3 v1 = D3DXVECTOR3(0,0,0);
-		D3DXVECTOR3 v2 = D3DXVECTOR3(1,0,0);
-		D3DXVECTOR3 v3 = D3DXVECTOR3(1,1,0);
+		D3DXVECTOR3 v1 = D3DXVECTOR3(0, 0, 0);
+		D3DXVECTOR3 v2 = D3DXVECTOR3(1, 0, 0);
+		D3DXVECTOR3 v3 = D3DXVECTOR3(1, 1, 0);
 
-		float indicefx = (posx + anchof)/deltax;
-		float indicefz = (posz + altof)/deltay;
+		float indicefx = (posx + anchof) / deltax;
+		float indicefz = (posz + altof) / deltay;
 
 		int indiceix = (int)indicefx;
 		int indiceiz = (int)indicefz;
@@ -617,17 +809,17 @@ public:
 		float fz = indicefz - (float)indiceiz;
 
 		if (fx >= fz)
-		{		
+		{
 			D3DXPlaneFromPoints(&plano, &vertcol[indiceix + indiceiz * anchoTexTerr].pos,
 				&vertcol[indiceix + 1 + indiceiz * anchoTexTerr].pos,
-				&vertcol[indiceix + 1 + (indiceiz + 1)* anchoTexTerr].pos);
+				&vertcol[indiceix + 1 + (indiceiz + 1) * anchoTexTerr].pos);
 			D3DXPlaneIntersectLine(&colision, &plano, &p1, &p2);
 		}
 		else
 		{
 			D3DXPlaneFromPoints(&plano, &vertcol[indiceix + indiceiz * anchoTexTerr].pos,
 				&vertcol[indiceix + 1 + (indiceiz + 1) * anchoTexTerr].pos,
-				&vertcol[indiceix + (indiceiz + 1)* anchoTexTerr].pos);
+				&vertcol[indiceix + (indiceiz + 1) * anchoTexTerr].pos);
 			D3DXPlaneIntersectLine(&colision, &plano, &p1, &p2);
 		}
 

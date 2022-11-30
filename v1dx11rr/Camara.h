@@ -7,11 +7,14 @@
 #include <d3d11.h>
 #include <D3DX11.h>
 #include <D3DX10math.h>
+bool uwu = false;
 
 class Camara{
 public:
 	D3DXVECTOR3 posCam;
+	D3DXVECTOR3 pastCam;
 	D3DXVECTOR3 posCam3P;
+	D3DXVECTOR3 pastCam3P;
 	D3DXVECTOR3 hdveo;
 	D3DXVECTOR3 hdvoy;
 	D3DXVECTOR3 refUp;
@@ -22,8 +25,25 @@ public:
 	D3DXMATRIX proyeccion;
 	int ancho;
 	int alto;
+	float pos[2];
 
 	D3DXMATRIX rotacion;
+
+	float* getPos() {
+		pos[0] = posCam.x;
+		pos[1] = posCam.z;
+
+		return pos;
+	}
+
+	void setCondicion(bool parametro) {
+		uwu = parametro;
+	}
+
+	bool getCondition() {
+		return uwu;
+	}
+
 	                                             //diferentes direcciones (3 valores siempre necesarios para crear una cámara
 	Camara(D3DXVECTOR3 eye, D3DXVECTOR3 target, D3DXVECTOR3 up, int Ancho, int Alto)
 	{
@@ -62,11 +82,11 @@ public:
 	                                  // rotación y  rotación x 
 	D3DXMATRIX UpdateCam(float vel, float arriaba, float izqder, bool camaraTipo)
 	{
+		pastCam = posCam;
+
 		//Para que no nos de problema la cámara
 		D3DXMATRIX vistaPrev = vista;
 		D3DXMatrixTranslation(&vista, 0, 0, 0);
-
-
 
 		D3DXVECTOR4 tempo;
 		D3DXQUATERNION quatern; //quaternion temporal para la camara

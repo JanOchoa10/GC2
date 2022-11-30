@@ -1,0 +1,14 @@
+--Se ubicó definitavemente las posiciones de los modelos de las
+	contrucciones
+
+--Se aplicó colision solamente a las construcciones y solamente en
+	primera persona (HACE FALTA COLISIONAR EN 3RA PERSONA)
+
+--Se aplicaron los 3 shaders (3 pixel y 3 vertex) en skydome,
+	terreno y agua.
+
+--Como se mofificó el heigthmap del terreno, HACE FALTA VOLVER
+	A PONER EL LAGO
+
+--A PESAR DE TENER SHADERS IMPLEMENTADOS, CHECAR SI SE CUMPLE
+	EL RUBRO DE LA ILUMINACION

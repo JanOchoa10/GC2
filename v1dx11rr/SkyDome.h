@@ -34,6 +34,8 @@ private:
 	ID3D11Buffer* indexBuffer;
 
 	ID3D11ShaderResourceView* textura;
+	ID3D11ShaderResourceView* textura2;
+	ID3D11ShaderResourceView* textura3;
 	ID3D11SamplerState* texSampler;
 
 	ID3D11Buffer* matrixBufferCB;
@@ -48,7 +50,7 @@ private:
 
 public:
 	SkyDome(int slices, int stacks, float radio, ID3D11Device** d3dDevice,
-		ID3D11DeviceContext** d3dContext, WCHAR* diffuseTex)
+		ID3D11DeviceContext** d3dContext, WCHAR* diffuseTex, WCHAR* diffuseTex2, WCHAR* diffuseTex3)
 	{
 		this->slices = slices;
 		this->stacks = stacks;
@@ -57,7 +59,7 @@ public:
 		vertices = NULL;
 		this->d3dDevice = d3dDevice;
 		this->d3dContext = d3dContext;
-		LoadContent(diffuseTex);
+		LoadContent(diffuseTex, diffuseTex2, diffuseTex3);
 	}
 
 	~SkyDome()
@@ -91,7 +93,7 @@ public:
 		return true;
 	}
 
-	bool LoadContent(WCHAR* diffuseTex)
+	bool LoadContent(WCHAR* diffuseTex, WCHAR* diffuseTex2, WCHAR* diffuseTex3)
 	{
 		HRESULT d3dResult;
 
@@ -164,15 +166,15 @@ public:
 		{
 			for (int y = 0; y < stacks; y++)
 			{
-				float u = (float)(((double)((dx - x)*0.5f) / dx) *
+				float u = (float)(((double)((dx - x) * 0.5f) / dx) *
 					sin(D3DX_PI * y * 2.0f / dx)) + 0.5f;
-				float v = (float)(((double)((dy - x)*0.5f) / dy) *
+				float v = (float)(((double)((dy - x) * 0.5f) / dy) *
 					cos(D3DX_PI * y * 2.0 / dy)) + 0.5f;
 
 				int indiceArreglo = x * slices + y;
-				vertices[indiceArreglo].pos = D3DXVECTOR3((float)(radio*cos(((double)x / dx)* D3DX_PI / 2) *
-					cos(2.0 * D3DX_PI * (double)y / dx)), (float)(radio*sin(((double)x / dx) * D3DX_PI / 2)),
-					(float)(radio*cos(((double)x / dy) * D3DX_PI / 2)*sin(2.0f * D3DX_PI * (double)y / dy)));
+				vertices[indiceArreglo].pos = D3DXVECTOR3((float)(radio * cos(((double)x / dx) * D3DX_PI / 2) *
+					cos(2.0 * D3DX_PI * (double)y / dx)), (float)(radio * sin(((double)x / dx) * D3DX_PI / 2)),
+					(float)(radio * cos(((double)x / dy) * D3DX_PI / 2) * sin(2.0f * D3DX_PI * (double)y / dy)));
 				vertices[indiceArreglo].UV = D3DXVECTOR2(u, v);
 			}
 		}
@@ -198,6 +200,8 @@ public:
 		creaIndices();
 
 		d3dResult = D3DX11CreateShaderResourceViewFromFile((*d3dDevice), diffuseTex, 0, 0, &textura, 0);
+		d3dResult = D3DX11CreateShaderResourceViewFromFile((*d3dDevice), diffuseTex2, 0, 0, &textura2, 0);
+		d3dResult = D3DX11CreateShaderResourceViewFromFile((*d3dDevice), diffuseTex3, 0, 0, &textura3, 0);
 
 		if (FAILED(d3dResult))
 		{
@@ -276,13 +280,15 @@ public:
 		matrices->projMatrix = projection;
 	}
 
-	void Render(D3DXVECTOR3 trans)
+	void Render(D3DXVECTOR3 trans, int contador)
 	{
 		if (d3dContext == 0)
 			return;
 
 		unsigned int stride = sizeof(SkyComponent);
 		unsigned int offset = 0;
+
+		matrices->valores.w = contador;
 
 		(*d3dContext)->IASetInputLayout(inputLayout);
 		(*d3dContext)->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
@@ -292,6 +298,8 @@ public:
 		(*d3dContext)->VSSetShader(solidColorVS, 0, 0);
 		(*d3dContext)->PSSetShader(solidColorPS, 0, 0);
 		(*d3dContext)->PSSetShaderResources(0, 1, &textura);
+		(*d3dContext)->PSSetShaderResources(1, 1, &textura2);
+		(*d3dContext)->PSSetShaderResources(2, 1, &textura3);
 		(*d3dContext)->PSSetSamplers(0, 1, &texSampler);
 
 		D3DXMATRIX worldMat;
@@ -308,7 +316,7 @@ public:
 private:
 	void creaIndices()
 	{
-		cantIndex = (slices - 1)*(stacks - 1) * 6;
+		cantIndex = (slices - 1) * (stacks - 1) * 6;
 		indices = new short[cantIndex];
 		int counter = 0;
 		for (int i = 0; i < slices - 1; i++)
@@ -317,8 +325,8 @@ private:
 			{
 				int lowerLeft = j + i * stacks;
 				int lowerRight = (j + 1) + i * stacks;
-				int topLeft = j + (i + 1)*stacks;
-				int topRight = (j + 1) + (i + 1)*stacks;
+				int topLeft = j + (i + 1) * stacks;
+				int topRight = (j + 1) + (i + 1) * stacks;
 
 				indices[counter++] = lowerLeft;
 				indices[counter++] = lowerRight;

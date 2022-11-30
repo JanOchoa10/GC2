@@ -23,6 +23,23 @@ public:
 	{
 		D3DXVECTOR3 pos;
 	};
+	struct LightComponents {
+		float diffuseLightColor[4];
+		float lightDirection[3];
+
+		float oleaje;
+	};
+	struct Factores
+	{
+		float FAA;
+		float FAD;
+		float FAS;
+		float padding;
+	};
+	struct oleajeFactor {
+		float factorOleaje;
+		D3DXVECTOR3 padding;
+	};
 
 	
 
@@ -34,8 +51,13 @@ public:
 	ID3D11Buffer* indexBuffer;
 
 	ID3D11ShaderResourceView* colorMap;
+	ID3D11ShaderResourceView* dudvmap;
 	ID3D11ShaderResourceView* normalMap;
 	ID3D11SamplerState* colorMapSampler;
+
+	ID3D11Buffer* lightCB;
+	ID3D11Buffer* oleajeCB;
+	ID3D11Buffer* factoresCB;
 
 	ID3D11Buffer* viewCB;
 	ID3D11Buffer* projCB;
@@ -69,6 +91,19 @@ public:
 		CargaParametros(billb,normal, escal);
 	}
 
+	BillboardRR(WCHAR* billb, WCHAR* normal, ID3D11Device* D3DDevice, ID3D11DeviceContext* D3DContext, float escala, bool valor)
+	{
+		//copiamos el device y el device context a la clase terreno
+		d3dContext = D3DContext;
+		d3dDevice = D3DDevice;
+		//este es el ancho y el alto del terreno en su escala
+
+		float escal = escala;
+		frontal = D3DXVECTOR3(0, 0, 1);
+		//aqui cargamos las texturas de alturas y el cesped
+		CargaParametrosWater(billb, normal, 50, 50);
+	}
+
 	~BillboardRR()
 	{
 		//libera recursos
@@ -99,6 +134,210 @@ public:
 		if (errorBuffer != 0)
 			errorBuffer->Release();
 
+		return true;
+	}
+
+	bool CargaParametrosWater(WCHAR* billb, WCHAR* dudvmaP, float escalax, float escalay)
+	{
+		HRESULT d3dResult;
+
+
+		ID3DBlob* vsBuffer = 0;
+
+		//cargamos el shaders de vertices que esta contenido en el Shader.fx, note
+		//que VS_Main es el nombre del vertex shader en el shader, vsBuffer contendra
+		//al puntero del mismo
+		bool compileResult = CompileD3DShader(L"water.fx", "VS_Main", "vs_4_0", &vsBuffer);
+		//en caso de no poder cargarse ahi muere la cosa
+		if (compileResult == false)
+		{
+			return false;
+		}
+
+		//aloja al shader en la memeoria del gpu o el cpu
+		d3dResult = d3dDevice->CreateVertexShader(vsBuffer->GetBufferPointer(),
+			vsBuffer->GetBufferSize(), 0, &VertexShaderVS);
+		//en caso de falla sale
+		if (FAILED(d3dResult))
+		{
+
+			if (vsBuffer)
+				vsBuffer->Release();
+
+			return false;
+		}
+
+		//lo nuevo, antes creabamos una estructura con la definicion del vertice, ahora creamos un mapa o layout
+		//de como queremos construir al vertice, esto es la definicion
+		D3D11_INPUT_ELEMENT_DESC billLayout[] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+		};
+
+		unsigned int elementos = ARRAYSIZE(billLayout);
+
+		d3dResult = d3dDevice->CreateInputLayout(billLayout, elementos,
+			vsBuffer->GetBufferPointer(), vsBuffer->GetBufferSize(), &inputLay);
+
+		vsBuffer->Release();
+
+		if (FAILED(d3dResult))
+		{
+			return false;
+		}
+
+		ID3DBlob* psBuffer = 0;
+		// de los vertices pasamos al pixel shader, note que el nombre del shader es el mismo
+		//ahora buscamos al pixel shader llamado PS_Main
+		compileResult = CompileD3DShader(L"Water.fx", "PS_Main", "ps_4_0", &psBuffer);
+
+		if (compileResult == false)
+		{
+			return false;
+		}
+		//ya compilado y sin error lo ponemos en la memoria
+		d3dResult = d3dDevice->CreatePixelShader(psBuffer->GetBufferPointer(),
+			psBuffer->GetBufferSize(), 0, &solidColorPS);
+
+		psBuffer->Release();
+
+		if (FAILED(d3dResult))
+		{
+			return false;
+		}
+
+
+		vertices = new VertexComponent[4];
+
+		// Se calculan los vertices 'x' y 'z'. 'Y' se saca del mapa de normales
+		vertices[0].pos.x = 0;
+		vertices[0].pos.y = 0;
+		vertices[0].pos.z = -1 * escalax;
+		vertices[0].UV.x = 0;
+		vertices[0].UV.y = 1;
+
+		vertices[1].pos.x = 0;
+		vertices[1].pos.y = 2 * escalay;
+		vertices[1].pos.z = -1 * escalax;
+		vertices[1].UV.x = 0;
+		vertices[1].UV.y = 0;
+
+		vertices[2].pos.x = 0;
+		vertices[2].pos.y = 2 * escalay;
+		vertices[2].pos.z = 1 * escalax;
+		vertices[2].UV.x = 1;
+		vertices[2].UV.y = 0;
+
+		vertices[3].pos.x = 0;
+		vertices[3].pos.y = 0;
+		vertices[3].pos.z = 1 * escalax;
+		vertices[3].UV.x = 1;
+		vertices[3].UV.y = 1;
+
+		//proceso de guardar el buffer de vertices para su uso en el render
+		D3D11_BUFFER_DESC vertexDesc;
+		ZeroMemory(&vertexDesc, sizeof(vertexDesc));
+		vertexDesc.Usage = D3D11_USAGE_DEFAULT;
+		vertexDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		vertexDesc.ByteWidth = sizeof(VertexComponent) * 4;
+
+		D3D11_SUBRESOURCE_DATA resourceData;
+		ZeroMemory(&resourceData, sizeof(resourceData));
+		resourceData.pSysMem = vertices;
+
+		d3dResult = d3dDevice->CreateBuffer(&vertexDesc, &resourceData, &vertexBuffer);
+
+		if (FAILED(d3dResult))
+		{
+			MessageBox(0, L"Error", L"Error al crear vertex buffer", MB_OK);
+			return false;
+		}
+		//ya una vez pasados los vertices al buffer borramos el arreglo donde los habiamos creado inicialmente
+		delete vertices;
+
+		//creamos los indices para hacer el terreno
+		estableceIndices();
+		//crea los accesos de las texturas para los shaders 
+		d3dResult = D3DX11CreateShaderResourceViewFromFile(d3dDevice, billb, 0, 0, &colorMap, 0);
+
+		if (FAILED(d3dResult))
+		{
+			return false;
+		}
+
+		d3dResult = D3DX11CreateShaderResourceViewFromFile(d3dDevice, dudvmaP, 0, 0, &dudvmap, 0);
+
+		if (FAILED(d3dResult))
+		{
+			return false;
+		}
+
+
+		//aqui creamos el sampler
+		D3D11_SAMPLER_DESC colorMapDesc;
+		ZeroMemory(&colorMapDesc, sizeof(colorMapDesc));
+		colorMapDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+		colorMapDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+		colorMapDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+		colorMapDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+		colorMapDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		colorMapDesc.MaxLOD = D3D11_FLOAT32_MAX;
+		//con la estructura de descripion creamos el sampler
+		d3dResult = d3dDevice->CreateSamplerState(&colorMapDesc, &colorMapSampler);
+
+		if (FAILED(d3dResult))
+		{
+			return false;
+		}
+
+		//creamos los buffers para el shader para poder pasarle las matrices
+		D3D11_BUFFER_DESC constDesc;
+		ZeroMemory(&constDesc, sizeof(constDesc));
+		constDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		constDesc.ByteWidth = sizeof(D3DXMATRIX);
+		constDesc.Usage = D3D11_USAGE_DEFAULT;
+		//de vista
+		d3dResult = d3dDevice->CreateBuffer(&constDesc, 0, &viewCB);
+
+		if (FAILED(d3dResult))
+		{
+			return false;
+		}
+		//de proyeccion
+		d3dResult = d3dDevice->CreateBuffer(&constDesc, 0, &projCB);
+
+		if (FAILED(d3dResult))
+		{
+			return false;
+		}
+		//de mundo
+		d3dResult = d3dDevice->CreateBuffer(&constDesc, 0, &worldCB);
+
+		if (FAILED(d3dResult))
+		{
+			return false;
+		}
+
+		d3dResult = d3dDevice->CreateBuffer(&constDesc, 0, &factoresCB);
+
+		if (FAILED(d3dResult))
+		{
+			return false;
+		}
+		d3dResult = d3dDevice->CreateBuffer(&constDesc, 0, &oleajeCB);
+
+		if (FAILED(d3dResult))
+		{
+			return false;
+		}
+
+		d3dResult = d3dDevice->CreateBuffer(&constDesc, 0, &lightCB);
+
+		if (FAILED(d3dResult))
+		{
+			return false;
+		}
 		return true;
 	}
 
@@ -317,6 +556,79 @@ public:
 		worldCB = 0;
 	}
 
+	void DrawWater(D3DXMATRIX vista, D3DXMATRIX proyeccion, D3DXVECTOR3 poscam, float posy, float oleaje)
+	{
+
+
+		//paso de datos, es decir cuanto es el ancho de la estructura
+		unsigned int stride = sizeof(VertexComponent);
+		unsigned int offset = 0;
+		//define la estructura del vertice a traves de layout
+		d3dContext->IASetInputLayout(inputLay);
+
+		//define con que buffer trabajara
+		d3dContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+		//define con buffer de indices trabajara
+		d3dContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+		//define la forma de conexion de los vertices
+		d3dContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		//Establece el vertex y pixel shader que utilizara
+		d3dContext->VSSetShader(VertexShaderVS, 0, 0);
+		d3dContext->PSSetShader(solidColorPS, 0, 0);
+		//pasa lo sbuffers al shader
+		d3dContext->PSSetShaderResources(0, 1, &colorMap);
+		d3dContext->PSSetShaderResources(1, 1, &dudvmap);
+		d3dContext->PSSetSamplers(0, 1, &colorMapSampler);
+
+		D3DXMATRIX rotationMat;
+		D3DXMATRIX translationMat;
+		D3DXMATRIX worldMat;
+
+		D3DXMatrixRotationYawPitchRoll(&rotationMat, 0, 0, 90.0f * 0.0174532925f); //Con esto se hace un plano el billboard
+
+		D3DXMatrixTranslation(&translationMat, posx, posy, posz);
+
+		worldMat = rotationMat * translationMat;
+
+		Factores factores;
+		factores.FAA = 1.0f; //Mientras mas se le ponga mas claro se ve
+
+		oleajeFactor oleajefactor;
+		oleajefactor.factorOleaje = oleaje;
+
+		LightComponents lightComponents;
+		lightComponents.oleaje = oleaje;
+
+		lightComponents.lightDirection[0] = 0;
+		lightComponents.lightDirection[1] = -10;
+		lightComponents.lightDirection[2] = 0;
+
+		lightComponents.diffuseLightColor[0] = 1;
+		lightComponents.diffuseLightColor[1] = 1;
+		lightComponents.diffuseLightColor[2] = 1;
+		lightComponents.diffuseLightColor[3] = 1;
+
+
+		D3DXMatrixTranspose(&worldMat, &worldMat);
+		//actualiza los buffers del shader
+		d3dContext->UpdateSubresource(worldCB, 0, 0, &worldMat, 0, 0);
+		d3dContext->UpdateSubresource(viewCB, 0, 0, &vista, 0, 0);
+		d3dContext->UpdateSubresource(projCB, 0, 0, &proyeccion, 0, 0);
+		d3dContext->UpdateSubresource(factoresCB, 0, 0, &factores, 0, 0);
+		d3dContext->UpdateSubresource(oleajeCB, 0, 0, &oleajefactor, 0, 0);
+		d3dContext->UpdateSubresource(lightCB, 0, 0, &lightComponents, 0, 0);
+
+		//le pasa al shader los buffers
+		d3dContext->VSSetConstantBuffers(0, 1, &worldCB);
+		d3dContext->VSSetConstantBuffers(1, 1, &viewCB);
+		d3dContext->VSSetConstantBuffers(2, 1, &projCB);
+		d3dContext->PSSetConstantBuffers(3, 1, &factoresCB);
+		d3dContext->PSSetConstantBuffers(4, 1, &oleajeCB);
+		d3dContext->PSSetConstantBuffers(5, 1, &lightCB);
+		//cantidad de trabajos
+		d3dContext->DrawIndexed(6, 0, 0);
+	}
 
 	void Draw(D3DXMATRIX vista, D3DXMATRIX proyeccion, D3DXVECTOR3 poscam, float xx, float zz, float posy, float escala, vector2* uv1, vector2* uv2, vector2* uv3, vector2* uv4, int frame, bool animated)
 	{
