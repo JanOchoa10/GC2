@@ -11,6 +11,8 @@
 #include "ModeloRR.h"
 #include "XACT3Util.h"
 #include "Tiempo.h"
+#include "GUI.h"
+#include "Text.h"
 
 class DXRR{	
 
@@ -67,6 +69,9 @@ public:
 
 	Camara *camara;
 	Tiempo* levelTime;
+	GUI* vida;
+	Text* texto;
+	Text* texto2;
 
 	ModeloRR* prota;
 	ModeloRR* nave;
@@ -75,7 +80,15 @@ public:
 	ModeloRR* vivienda2;
 	ModeloRR* cheep;
 	ModeloRR* sandman;
+	ModeloRR* sandman2;
+	ModeloRR* sandman3;
+	ModeloRR* sandman4;
+	ModeloRR* sandman5;
 	ModeloRR* skeleton;
+	ModeloRR* skeleton2;
+	ModeloRR* skeleton3;
+	ModeloRR* skeleton4;
+	ModeloRR* skeleton5;
 	
 	float izqder;
 	float arriaba;
@@ -91,6 +104,10 @@ public:
 
 	bool camaraTipo;
 	float rotCam;
+
+	int vidas = 4;
+	//bool effectDone;
+	float segundos;
 	
     DXRR(HWND hWnd, int Ancho, int Alto)
 	{
@@ -98,6 +115,7 @@ public:
 		ContFramesNoche = 40;
 		ContFramesTarde = 80;
 		contadorGLSL = 0;
+		segundos = 301;
 		breakpoint = false;
 		frameBillboard = 0;
 		ancho = Ancho;
@@ -140,11 +158,26 @@ public:
 		vivienda = new ModeloRR(d3dDevice, d3dContext, "Assets/NewVivienda/Vivienda4.obj", L"Assets/NewVivienda/lambert12_Base_Color.png", L"Assets/NewVivienda/lambert12_Roughness.png", 140, 150);
 		vivienda2 = new ModeloRR(d3dDevice, d3dContext, "Assets/Vivienda/Laberinto2.obj", L"Assets/Vivienda/Laberinto2_Color.png", L"Assets/Vivienda/Laberinto2_Specular.png", -125, -75);
 		cheep = new ModeloRR(d3dDevice, d3dContext, "Assets/Auto/Cheep.obj", L"Assets/Auto/Cheep.jpg", L"Assets/Auto/Imagen1.jpg", 0, -30);
-		sandman = new ModeloRR(d3dDevice, d3dContext, "Assets/SandMan/SandMan.obj", L"Assets/SandMan/SandManColor.png", L"Assets/SandMan/SandManSpecular2.png", 0, -60);
-		skeleton = new ModeloRR(d3dDevice, d3dContext, "Assets/Skeleton/Skeleton.obj", L"Assets/Skeleton/SkeletonColor.png", L"Assets/Skeleton/lambert2_Height.png", -10, -60);
-		
+		sandman = new ModeloRR(d3dDevice, d3dContext, "Assets/SandMan/SandMan.obj", L"Assets/SandMan/SandManColor.png", L"Assets/SandMan/SandManSpecular2.png", 90, -90);
+		sandman2 = new ModeloRR(d3dDevice, d3dContext, "Assets/SandMan/SandMan.obj", L"Assets/SandMan/SandManColor.png", L"Assets/SandMan/SandManSpecular2.png", 50, 100);
+		sandman3 = new ModeloRR(d3dDevice, d3dContext, "Assets/SandMan/SandMan.obj", L"Assets/SandMan/SandManColor.png", L"Assets/SandMan/SandManSpecular2.png", 175, 50);
+		sandman4 = new ModeloRR(d3dDevice, d3dContext, "Assets/SandMan/SandMan.obj", L"Assets/SandMan/SandManColor.png", L"Assets/SandMan/SandManSpecular2.png", -125, 50);
+		sandman5 = new ModeloRR(d3dDevice, d3dContext, "Assets/SandMan/SandMan.obj", L"Assets/SandMan/SandManColor.png", L"Assets/SandMan/SandManSpecular2.png", 0, -100);
+		skeleton = new ModeloRR(d3dDevice, d3dContext, "Assets/Skeleton/Skeleton.obj", L"Assets/Skeleton/SkeletonColor.png", L"Assets/Skeleton/lambert2_Height.png", 140, 115);
+		skeleton2 = new ModeloRR(d3dDevice, d3dContext, "Assets/Skeleton/Skeleton.obj", L"Assets/Skeleton/SkeletonColor.png", L"Assets/Skeleton/lambert2_Height.png", 175, -25);
+		skeleton3 = new ModeloRR(d3dDevice, d3dContext, "Assets/Skeleton/Skeleton.obj", L"Assets/Skeleton/SkeletonColor.png", L"Assets/Skeleton/lambert2_Height.png", -10, 65);
+		skeleton4 = new ModeloRR(d3dDevice, d3dContext, "Assets/Skeleton/Skeleton.obj", L"Assets/Skeleton/SkeletonColor.png", L"Assets/Skeleton/lambert2_Height.png", -10, -90);
+		skeleton5 = new ModeloRR(d3dDevice, d3dContext, "Assets/Skeleton/Skeleton.obj", L"Assets/Skeleton/SkeletonColor.png", L"Assets/Skeleton/lambert2_Height.png", -10, -100);
+
 		camaraTipo = true;
 		rotCam = 0.0;
+
+		//vida
+		vida = new GUI(d3dDevice, d3dContext, 0.15, 0.26, L"Assets/UI/health_full.png");
+
+		//texto
+		texto = new Text(d3dDevice, d3dContext, 3.6, 1.2, L"Assets/UI/font.png", XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f));
+		texto2 = new Text(d3dDevice, d3dContext, 3.6, 1.2, L"Assets/UI/font.png", XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f));
 		
 	}
 
@@ -283,6 +316,21 @@ public:
 
 		d3dContext->OMSetRenderTargets(1, &backBufferTarget, depthStencilView);
 
+		// Inicializar XACT
+		bool res = m_XACT3.Initialize();
+		if (!res) return false;
+		res = m_XACT3.LoadWaveBank(L"Assets\\Sonido\\WaveBank.xwb");
+		if (!res) return false;
+		res = m_XACT3.LoadSoundBank(L"Assets\\Sonido\\SoundBank.xsb");
+		if (!res) return false;
+
+		// Reproducir música de fondo
+		cueIndex = m_XACT3.m_pSoundBank->GetCueIndex("CreepingUpOnYou_Godmode");
+		m_XACT3.m_pSoundBank->Play(cueIndex, 0, 0, 0);
+
+		// Efecto de sonido
+		//cueIndex = m_XACT3.m_pSoundBank->GetCueIndex("Golpe");
+
 		return true;			
 		
 	}
@@ -393,11 +441,34 @@ public:
 		vivienda->Draw(camara->vista, camara->proyeccion, 140, terreno->Superficie(140, 150), 150, camara->posCam, 10.0f, 0, 'A', 1, camaraTipo, false);
 		vivienda2->Draw(camara->vista, camara->proyeccion, -125, terreno->Superficie(-125, -75), -75, camara->posCam, 10.0f, 0, 'A', 1, camaraTipo, false);
 		//cheep->Draw(camara->vista, camara->proyeccion, 0, terreno->Superficie(0, -30), -30, camara->posCam, 1.0f, 0, 'A', 5.0, camaraTipo, false);
-		sandman->Draw(camara->vista, camara->proyeccion, 0, terreno->Superficie(0, -60), -60, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
-		skeleton->Draw(camara->vista, camara->proyeccion, -10, terreno->Superficie(-10, -60), -60, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+
+		sandman->Draw(camara->vista, camara->proyeccion, 90, terreno->Superficie(90, -90), -90, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+		sandman2->Draw(camara->vista, camara->proyeccion, 50, terreno->Superficie(50, 100), 100, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+		sandman3->Draw(camara->vista, camara->proyeccion, 175, terreno->Superficie(175, 50), 50, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+		sandman4->Draw(camara->vista, camara->proyeccion, -125, terreno->Superficie(-125, 50), 50, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+		sandman5->Draw(camara->vista, camara->proyeccion, 0, terreno->Superficie(0, -100), -100, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+
+		skeleton->Draw(camara->vista, camara->proyeccion, 140, terreno->Superficie(140, 115), 115, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+		skeleton2->Draw(camara->vista, camara->proyeccion, 175, terreno->Superficie(175, -25), -25, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+		skeleton3->Draw(camara->vista, camara->proyeccion, -10, terreno->Superficie(-10, 65), 65, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+		skeleton4->Draw(camara->vista, camara->proyeccion, -10, terreno->Superficie(-10, -90), -90, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+		skeleton5->Draw(camara->vista, camara->proyeccion, -10, terreno->Superficie(-10, -100), -100, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
 		 
                                                                                       //specular //cambiar letra //escala
 
+		TurnOnAlphaBlending();
+		//texto2->DrawTextW(-0.50, -0.40, "HAS GANADO!", 0.015); //-0.50, 0.80
+		TurnOffAlphaBlending();
+
+		vida->Draw(-0.86, -0.50);  //esquina inferior izq -0.86, -0.50   esquina inferior derecha 0.45, -0.50
+
+		TurnOnAlphaBlending();
+		texto->DrawTextW(-0.95, 0.80, "Artilugios:   ", 0.015); //+artilugios     esquina sup izq -0.50, 0.80   inf derecha  -0.95, -0.40
+
+		texto->DrawTextW(-0.95, 0.90, "Tiempo:  " + texto->Time(segundos), 0.015);  // esquina sup izq -0.95, 0.90  inf derecha  -0.95, -0.50
+		TurnOffAlphaBlending();
+
+		segundos -= 0.02;
 
 	#pragma region Colisiones
 		if (camaraTipo == true) {
