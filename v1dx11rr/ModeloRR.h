@@ -46,6 +46,7 @@ private:
 
 	ID3D11ShaderResourceView* colorMap;
 	ID3D11ShaderResourceView* specMap;
+	ID3D11ShaderResourceView* normalMap;
 	ID3D11SamplerState* colorMapSampler;
 
 	ID3D11Buffer* viewCB;
@@ -102,7 +103,7 @@ public:
 		return pos;
 	}
 
-	ModeloRR(ID3D11Device* D3DDevice, ID3D11DeviceContext* D3DContext, char* ModelPath, WCHAR* colorTexturePath, WCHAR* specularTexturePath, float _posX, float _posZ)
+	ModeloRR(ID3D11Device* D3DDevice, ID3D11DeviceContext* D3DContext, char* ModelPath, WCHAR* colorTexturePath, WCHAR* specularTexturePath, WCHAR* normalTexturePath, float _posX, float _posZ)
 	{
 		//copiamos el device y el device context a la clase terreno
 		d3dContext = D3DContext;
@@ -112,7 +113,7 @@ public:
 		posZ = _posZ;
 
 		//aqui cargamos las texturas de alturas y el cesped
-		CargaParametros(ModelPath, colorTexturePath, specularTexturePath);//L"Assets/Tent-Tower/tent_diffuse.jpg"
+		CargaParametros(ModelPath, colorTexturePath, specularTexturePath, normalTexturePath); //L"Assets/Tent-Tower/tent_diffuse.jpg"
 	}
 
 	~ModeloRR()
@@ -164,7 +165,7 @@ public:
 		return true;
 	}
 
-	bool CargaParametros(char* ModelPath, WCHAR* diffuseTex, WCHAR* specularTex)
+	bool CargaParametros(char* ModelPath, WCHAR* diffuseTex, WCHAR* specularTex, WCHAR* normalTex)
 	{
 		HRESULT d3dResult;
 		
@@ -259,6 +260,7 @@ public:
 		//crea los accesos de las texturas para los shaders 
 		d3dResult = D3DX11CreateShaderResourceViewFromFile(d3dDevice, diffuseTex, 0, 0, &colorMap, 0);
 		d3dResult = D3DX11CreateShaderResourceViewFromFile(d3dDevice, specularTex, 0, 0, &specMap, 0);
+		d3dResult = D3DX11CreateShaderResourceViewFromFile(d3dDevice, normalTex, 0, 0, &normalMap, 0);
 		
 		if (FAILED(d3dResult))
 		{
@@ -416,6 +418,7 @@ public:
 		//pasa lo sbuffers al shader
 		d3dContext->PSSetShaderResources(0, 1, &colorMap);	
 		d3dContext->PSSetShaderResources(1, 1, &specMap);
+		d3dContext->PSSetShaderResources(2, 1, &normalMap);
 
 		d3dContext->PSSetSamplers(0, 1, &colorMapSampler);
 

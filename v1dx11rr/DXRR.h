@@ -44,6 +44,15 @@ public:
 	D3DXVECTOR4 luzEspecular;
 
 	#define PI 3.14159265
+
+	float DifAmb[2];
+	float luzAmb[4];
+	float posY, posX, posZ;
+	float PosicionesLuzDinamic[3];
+	float fad;
+	float fa;
+	float fas;
+
 	int frameBillboard;
 	int Contador;
 	int ContFramesTarde;
@@ -124,6 +133,18 @@ public:
 		ContFramesTarde = 80;
 		contadorGLSL = 0;
 		segundos = 301;
+		fad = 0.8f;
+		fa = 0.8f;
+		fas = 0.5f;
+		angle = 0.0f;
+		float luzx = 0.0f;
+		float luzy = 0.0f;
+		float luzz = 0.0f;
+
+		luzAmbiental = D3DXVECTOR4(0.0f, 0.0f, 0.0f, 0.0f);
+		luzDifusa = D3DXVECTOR4(0.0f, 0.0f, 0.0f, 0.0f);
+		luzEspecular = D3DXVECTOR4(0.0f, 0.0f, 0.0f, 0.0f);
+
 		breakpoint = false;
 		frameBillboard = 0;
 		ancho = Ancho;
@@ -143,13 +164,9 @@ public:
 		terreno = new TerrenoRR(L"ArenaB4.jpg", L"ArenaB4_spec.jpg", L"ArenaB4_normal.jpg",
 			L"ArenaB1.jpg", L"ArenaB1_spec.jpg", L"ArenaB1_norm.jpg",
 			L"ArenaB3.jpg", L"ArenaB3_spec.jpg", L"ArenaB3_normal.jpg",
-			L"Crater.jpg", 500, 500, d3dDevice, d3dContext);
+			L"CraterWater1.jpg", 500, 500, d3dDevice, d3dContext);
 		skydome = new SkyDome(32, 32, 100.0f, &d3dDevice, &d3dContext, L"SkyDome12.png", L"SkyDome8.png", L"SkyDome.png");  // skydome cambiado
 		oasis = new BillboardRR(L"Assets/Billboards/water.jpg", L"Assets/Billboards/waterDUDV.png", d3dDevice, d3dContext, 200, true);
-
-		levelTime = new Tiempo(0.0f, 600, 0.01);
-		//skydome->setDesvanecido(levelTime->getDesvanecido());	
-		//skydome->setDesvanecido(0.0f, 600, 0.01);
 
 		billCargaFuego();
 		billboard = new BillboardRR(L"Assets/Billboards/fuego-anim.png", L"Assets/Billboards/fuego-anim-normal.png", d3dDevice, d3dContext, 5);
@@ -160,30 +177,30 @@ public:
 		cactus = new BillboardRR(L"Assets/Billboards/cactus.png", L"Assets/Billboards/cactusNormal.png", d3dDevice, d3dContext, 15);
 		cactus2 = new BillboardRR(L"Assets/Billboards/cactus.png", L"Assets/Billboards/cactusNormal.png", d3dDevice, d3dContext, 15);
 		
-		prota = new ModeloRR(d3dDevice, d3dContext, "Assets/CorotSnake/Corot.obj", L"Assets/CorotSnake/AlbedoCorot.jpg", L"Assets/CorotSnake/MetallicCorot.jpg", 10, 0);
-		nave = new ModeloRR(d3dDevice, d3dContext, "Assets/Nave/Nave.obj", L"Assets/Nave/ColorNave.png", L"Assets/Nave/MetallicNave.png", 15, 0);
-		hangar = new ModeloRR(d3dDevice, d3dContext, "Assets/Hangar/nuevoHangar.obj", L"Assets/Hangar/HangarColor.jpg", L"Assets/Hangar/HangarRough.jpg", 75, -140); //Metallic o Rough se ven bien
-		vivienda = new ModeloRR(d3dDevice, d3dContext, "Assets/NewVivienda/Vivienda4.obj", L"Assets/NewVivienda/lambert12_Base_Color.png", L"Assets/NewVivienda/lambert12_Roughness.png", 140, 150);
-		vivienda2 = new ModeloRR(d3dDevice, d3dContext, "Assets/Vivienda/Laberinto2.obj", L"Assets/Vivienda/Laberinto2_Color.png", L"Assets/Vivienda/Laberinto2_Specular.png", -125, -75);
-		cheep = new ModeloRR(d3dDevice, d3dContext, "Assets/Auto/Cheep.obj", L"Assets/Auto/Cheep.jpg", L"Assets/Auto/Imagen1.jpg", 0, -30);
+		prota = new ModeloRR(d3dDevice, d3dContext, "Assets/CorotSnake/Corot.obj", L"Assets/CorotSnake/AlbedoCorot.jpg", L"Assets/CorotSnake/MetallicCorot.jpg", L"Assets/CorotSnake/NormalCorot.jpg", 10, 0);
+		nave = new ModeloRR(d3dDevice, d3dContext, "Assets/Nave/Nave.obj", L"Assets/Nave/ColorNave.png", L"Assets/Nave/MetallicNave.png", L"Assets/Nave/NormalNave.png", 15, 0);
+		hangar = new ModeloRR(d3dDevice, d3dContext, "Assets/Hangar/nuevoHangar.obj", L"Assets/Hangar/HangarColor.jpg", L"Assets/Hangar/HangarRough.jpg", L"Assets/Hangar/HangarNormal.jpg", 75, -140); //Metallic o Rough se ven bien
+		vivienda = new ModeloRR(d3dDevice, d3dContext, "Assets/NewVivienda/Vivienda4.obj", L"Assets/NewVivienda/lambert12_Base_Color.png", L"Assets/NewVivienda/lambert12_Roughness.png", L"Assets/NewVivienda/lambert12_Normal.png", 140, 150);
+		vivienda2 = new ModeloRR(d3dDevice, d3dContext, "Assets/Vivienda/Laberinto2.obj", L"Assets/Vivienda/Laberinto2_Color.png", L"Assets/Vivienda/Laberinto2_Specular.png", L"Assets/Vivienda/lambert1_Normal.png", -125, -75);
+		//cheep = new ModeloRR(d3dDevice, d3dContext, "Assets/Auto/Cheep.obj", L"Assets/Auto/Cheep.jpg", L"Assets/Auto/Imagen1.jpg", 0, -30);
 		
-		totem = new ModeloRR(d3dDevice, d3dContext, "Assets/SkeletonCubeModel/SkeletonCube.obj", L"Assets/SkeletonCubeModel/Cube.jpg", L"Assets/SkeletonCubeModel/CubeRough.jpg", 150, -90);
-		totem2 = new ModeloRR(d3dDevice, d3dContext, "Assets/SkeletonCubeModel/SkeletonCube.obj", L"Assets/SkeletonCubeModel/Cube.jpg", L"Assets/SkeletonCubeModel/CubeRough.jpg", 90, -35);
-		totem3 = new ModeloRR(d3dDevice, d3dContext, "Assets/SkeletonCubeModel/SkeletonCube.obj", L"Assets/SkeletonCubeModel/Cube.jpg", L"Assets/SkeletonCubeModel/CubeRough.jpg", 0, -150);
-		totem4 = new ModeloRR(d3dDevice, d3dContext, "Assets/SkeletonCubeModel/SkeletonCube.obj", L"Assets/SkeletonCubeModel/Cube.jpg", L"Assets/SkeletonCubeModel/CubeRough.jpg", 0, 125);
-		totem5 = new ModeloRR(d3dDevice, d3dContext, "Assets/SkeletonCubeModel/SkeletonCube.obj", L"Assets/SkeletonCubeModel/Cube.jpg", L"Assets/SkeletonCubeModel/CubeRough.jpg", 200, 100);
+		totem = new ModeloRR(d3dDevice, d3dContext, "Assets/SkeletonCubeModel/SkeletonCube.obj", L"Assets/SkeletonCubeModel/Cube.jpg", L"Assets/SkeletonCubeModel/CubeRough.jpg", L"Assets/SkeletonCubeModel/CubeNormal.jpg", 150, -90);
+		totem2 = new ModeloRR(d3dDevice, d3dContext, "Assets/SkeletonCubeModel/SkeletonCube.obj", L"Assets/SkeletonCubeModel/Cube.jpg", L"Assets/SkeletonCubeModel/CubeRough.jpg", L"Assets/SkeletonCubeModel/CubeNormal.jpg", 90, -35);
+		totem3 = new ModeloRR(d3dDevice, d3dContext, "Assets/SkeletonCubeModel/SkeletonCube.obj", L"Assets/SkeletonCubeModel/Cube.jpg", L"Assets/SkeletonCubeModel/CubeRough.jpg", L"Assets/SkeletonCubeModel/CubeNormal.jpg", 0, -150);
+		totem4 = new ModeloRR(d3dDevice, d3dContext, "Assets/SkeletonCubeModel/SkeletonCube.obj", L"Assets/SkeletonCubeModel/Cube.jpg", L"Assets/SkeletonCubeModel/CubeRough.jpg", L"Assets/SkeletonCubeModel/CubeNormal.jpg", 0, 125);
+		totem5 = new ModeloRR(d3dDevice, d3dContext, "Assets/SkeletonCubeModel/SkeletonCube.obj", L"Assets/SkeletonCubeModel/Cube.jpg", L"Assets/SkeletonCubeModel/CubeRough.jpg", L"Assets/SkeletonCubeModel/CubeNormal.jpg", 200, 100);
 
-		sandman = new ModeloRR(d3dDevice, d3dContext, "Assets/SandMan/SandMan.obj", L"Assets/SandMan/SandManColor.png", L"Assets/SandMan/SandManSpecular2.png", 90, -90);
-		sandman2 = new ModeloRR(d3dDevice, d3dContext, "Assets/SandMan/SandMan.obj", L"Assets/SandMan/SandManColor.png", L"Assets/SandMan/SandManSpecular2.png", 50, 100);
-		sandman3 = new ModeloRR(d3dDevice, d3dContext, "Assets/SandMan/SandMan.obj", L"Assets/SandMan/SandManColor.png", L"Assets/SandMan/SandManSpecular2.png", 175, 50);
-		sandman4 = new ModeloRR(d3dDevice, d3dContext, "Assets/SandMan/SandMan.obj", L"Assets/SandMan/SandManColor.png", L"Assets/SandMan/SandManSpecular2.png", -125, 50);
-		sandman5 = new ModeloRR(d3dDevice, d3dContext, "Assets/SandMan/SandMan.obj", L"Assets/SandMan/SandManColor.png", L"Assets/SandMan/SandManSpecular2.png", 50, 0);
+		sandman = new ModeloRR(d3dDevice, d3dContext, "Assets/SandMan/SandMan.obj", L"Assets/SandMan/SandManColor.png", L"Assets/SandMan/SandManSpecular2.png", L"Assets/SandMan/SandManNormal.png", 90, -90);
+		sandman2 = new ModeloRR(d3dDevice, d3dContext, "Assets/SandMan/SandMan.obj", L"Assets/SandMan/SandManColor.png", L"Assets/SandMan/SandManSpecular2.png", L"Assets/SandMan/SandManNormal.png", 50, 100);
+		sandman3 = new ModeloRR(d3dDevice, d3dContext, "Assets/SandMan/SandMan.obj", L"Assets/SandMan/SandManColor.png", L"Assets/SandMan/SandManSpecular2.png", L"Assets/SandMan/SandManNormal.png", 175, 50);
+		sandman4 = new ModeloRR(d3dDevice, d3dContext, "Assets/SandMan/SandMan.obj", L"Assets/SandMan/SandManColor.png", L"Assets/SandMan/SandManSpecular2.png", L"Assets/SandMan/SandManNormal.png", -125, 50);
+		sandman5 = new ModeloRR(d3dDevice, d3dContext, "Assets/SandMan/SandMan.obj", L"Assets/SandMan/SandManColor.png", L"Assets/SandMan/SandManSpecular2.png", L"Assets/SandMan/SandManNormal.png", 50, 0);
 		
-		skeleton = new ModeloRR(d3dDevice, d3dContext, "Assets/Skeleton/Skeleton.obj", L"Assets/Skeleton/SkeletonColor.png", L"Assets/Skeleton/lambert2_Height.png", 140, 115);
-		skeleton2 = new ModeloRR(d3dDevice, d3dContext, "Assets/Skeleton/Skeleton.obj", L"Assets/Skeleton/SkeletonColor.png", L"Assets/Skeleton/lambert2_Height.png", 175, -25);
-		skeleton3 = new ModeloRR(d3dDevice, d3dContext, "Assets/Skeleton/Skeleton.obj", L"Assets/Skeleton/SkeletonColor.png", L"Assets/Skeleton/lambert2_Height.png", -25, 150);
-		skeleton4 = new ModeloRR(d3dDevice, d3dContext, "Assets/Skeleton/Skeleton.obj", L"Assets/Skeleton/SkeletonColor.png", L"Assets/Skeleton/lambert2_Height.png", 100, 35);
-		skeleton5 = new ModeloRR(d3dDevice, d3dContext, "Assets/Skeleton/Skeleton.obj", L"Assets/Skeleton/SkeletonColor.png", L"Assets/Skeleton/lambert2_Height.png", -25, -100);
+		skeleton = new ModeloRR(d3dDevice, d3dContext, "Assets/Skeleton/Skeleton.obj", L"Assets/Skeleton/SkeletonColor.png", L"Assets/Skeleton/lambert2_Height.png", L"Assets/Skeleton/SkeletonNormal.png", 140, 115);
+		skeleton2 = new ModeloRR(d3dDevice, d3dContext, "Assets/Skeleton/Skeleton.obj", L"Assets/Skeleton/SkeletonColor.png", L"Assets/Skeleton/lambert2_Height.png", L"Assets/Skeleton/SkeletonNormal.png", 175, -25);
+		skeleton3 = new ModeloRR(d3dDevice, d3dContext, "Assets/Skeleton/Skeleton.obj", L"Assets/Skeleton/SkeletonColor.png", L"Assets/Skeleton/lambert2_Height.png", L"Assets/Skeleton/SkeletonNormal.png", -25, 150);
+		skeleton4 = new ModeloRR(d3dDevice, d3dContext, "Assets/Skeleton/Skeleton.obj", L"Assets/Skeleton/SkeletonColor.png", L"Assets/Skeleton/lambert2_Height.png", L"Assets/Skeleton/SkeletonNormal.png", 100, 35);
+		skeleton5 = new ModeloRR(d3dDevice, d3dContext, "Assets/Skeleton/Skeleton.obj", L"Assets/Skeleton/SkeletonColor.png", L"Assets/Skeleton/lambert2_Height.png", L"Assets/Skeleton/SkeletonNormal.png", -25, -100);
 
 		camaraTipo = true;
 		rotCam = 0.0;
@@ -425,7 +442,7 @@ public:
 		skydome->Render(camara->posCam, contadorGLSL);
 		TurnOnDepth();
 		//terreno->Draw(camara->vista, camara->proyeccion);
-		terreno->Draw(camara->vista, camara->proyeccion, luzAmbiental, luzDifusa, luzEspecular, 10, 1, 0, dirluz);//ought to change
+		terreno->Draw(camara->vista, camara->proyeccion, luzAmbiental, luzDifusa, luzEspecular, fad, fa, fas, dirluz); 
 		//TurnOnAlphaBlending();
 		billboard->Draw(camara->vista, camara->proyeccion, camara->posCam,
 			-11, -78, 4, 5, uv1, uv2, uv3, uv4, frameBillboard, true);
