@@ -128,7 +128,7 @@ public:
 	bool entra = true, temporal = false;
 	bool entra2 = true, temporal2 = false;
 	bool SandmanV[5], SandmanVTemporal[5], SkeletonV[5], SkeletonVTemporal[5];
-
+	float posicionSandmanVX;
 	
 	
     DXRR(HWND hWnd, int Ancho, int Alto)
@@ -179,6 +179,8 @@ public:
 		for (int i = 0; i < sizeof(SkeletonVTemporal); i++) {
 			SkeletonVTemporal[i] = false;
 		}
+
+		posicionSandmanVX = -125;
 
 		camara = new Camara(D3DXVECTOR3(0,80,10), D3DXVECTOR3(0,80,0), D3DXVECTOR3(0,1,0), Ancho, Alto);
 		//terreno = new TerrenoRR(500, 500, d3dDevice, d3dContext);  //Dos primeros números son la escala del terreno
@@ -232,8 +234,8 @@ public:
 		vida2 = new GUI(d3dDevice, d3dContext, 0.15, 0.26, L"Assets/UI/health_2.png");
 
 		//texto
-		texto = new Text(d3dDevice, d3dContext, 3.6, 1.2, L"Assets/UI/font.png", XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f));
-		texto2 = new Text(d3dDevice, d3dContext, 3.6, 1.2, L"Assets/UI/font.png", XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f));
+		texto = new Text(d3dDevice, d3dContext, 3.6, 1.2, L"Assets/UI/font.jpg", XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
+		texto2 = new Text(d3dDevice, d3dContext, 3.6, 1.2, L"Assets/UI/font.jpg", XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
 		gameOver = new GUI(d3dDevice, d3dContext, 1.00, 1.80, L"Assets/UI/game_overJan.png");
 		ganaste = new GUI(d3dDevice, d3dContext, 1.00, 1.80, L"Assets/UI/you_win.png");
 		
@@ -478,7 +480,7 @@ public:
 		oleaje += 0.0001;
 		oasis->posx = -130;
 		oasis->posz = 175;
-		oasis->DrawWater(camara->vista, camara->proyeccion, camara->posCam, terreno->Superficie(100, 20) + 12, oleaje);
+		oasis->DrawWater(camara->vista, camara->proyeccion, camara->posCam, terreno->Superficie(oasis->getPosX(), oasis->getPosZ()) - 12, oleaje);
 
 		palma->Draw(camara->vista, camara->proyeccion, camara->posCam, 75, 150, terreno->Superficie(75, 150) -13, 50, uv1, uv2, uv3, uv4, frameBillboard, false);
 		palma2->Draw(camara->vista, camara->proyeccion, camara->posCam, 25, 150, terreno->Superficie(25, 150) - 9, 35, uv1, uv2, uv3, uv4, frameBillboard, false);
@@ -500,24 +502,31 @@ public:
 		vivienda2->Draw(camara->vista, camara->proyeccion, -125, terreno->Superficie(-125, -75), -75, camara->posCam, 10.0f, 0, 'A', 1, camaraTipo, false);
 		//cheep->Draw(camara->vista, camara->proyeccion, 0, terreno->Superficie(0, -30), -30, camara->posCam, 1.0f, 0, 'A', 5.0, camaraTipo, false);
 
-		sandman->Draw(camara->vista, camara->proyeccion, 90, terreno->Superficie(90, -90), -90, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
-		sandman2->Draw(camara->vista, camara->proyeccion, 50, terreno->Superficie(50, 100), 100, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
-		sandman3->Draw(camara->vista, camara->proyeccion, 175, terreno->Superficie(175, 50), 50, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
-		sandman4->Draw(camara->vista, camara->proyeccion, -125, terreno->Superficie(-125, 50), 50, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
-		sandman5->Draw(camara->vista, camara->proyeccion, 50, terreno->Superficie(50,0), 0, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+		sandman->Draw(camara->vista, camara->proyeccion, 90, terreno->Superficie(sandman->getPosX(), sandman->getPosZ()), -90, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+		sandman2->Draw(camara->vista, camara->proyeccion, 50, terreno->Superficie(sandman2->getPosX(), sandman2->getPosZ()), 100, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+		sandman3->Draw(camara->vista, camara->proyeccion, 175, terreno->Superficie(sandman3->getPosX(), sandman3->getPosZ()), 50, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+		sandman4->Draw(camara->vista, camara->proyeccion, sandman4->getPosX(), terreno->Superficie(sandman4->getPosX(), sandman4->getPosZ()), 50, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+		sandman5->Draw(camara->vista, camara->proyeccion, 50, terreno->Superficie(sandman5->getPosX(), sandman5->getPosZ()), 0, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
 
-		skeleton->Draw(camara->vista, camara->proyeccion, 140, terreno->Superficie(140, 115), 115, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
-		skeleton2->Draw(camara->vista, camara->proyeccion, 175, terreno->Superficie(175, -25), -25, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
-		skeleton3->Draw(camara->vista, camara->proyeccion, -25, terreno->Superficie(-25, 150), 150, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
-		skeleton4->Draw(camara->vista, camara->proyeccion, 100, terreno->Superficie(100, 35), 35, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
-		skeleton5->Draw(camara->vista, camara->proyeccion, -25, terreno->Superficie(-25, -100), -100, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+		skeleton->Draw(camara->vista, camara->proyeccion, 140, terreno->Superficie(skeleton->getPosX(), skeleton->getPosZ()), 115, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+		skeleton2->Draw(camara->vista, camara->proyeccion, 175, terreno->Superficie(skeleton2->getPosX(), skeleton2->getPosZ()), -25, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+		skeleton3->Draw(camara->vista, camara->proyeccion, -25, terreno->Superficie(skeleton3->getPosX(), skeleton3->getPosZ()), 150, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+		skeleton4->Draw(camara->vista, camara->proyeccion, 100, terreno->Superficie(skeleton4->getPosX(), skeleton4->getPosZ()), 35, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+		skeleton5->Draw(camara->vista, camara->proyeccion, -25, terreno->Superficie(skeleton5->getPosX(), skeleton5->getPosZ()), -100, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
 		 
-                                                                                      //specular //cambiar letra //escala
+        //specular //cambiar letra //escala
 
-		if (cantTotems == 5) {
-			TurnOnAlphaBlending();
-			texto2->DrawTextW(-0.50, 0.80, "HAS GANADO!", 0.015); //-0.50, 0.80
-			TurnOffAlphaBlending();
+		if (posicionSandmanVX <= 0) {
+			posicionSandmanVX += 0.1f;
+			sandman4->setPosX(posicionSandmanVX);
+		}
+
+		if (cantTotems >= 5) {
+			//TurnOnAlphaBlending();
+			//texto2->DrawTextW(-0.50, 0.80, "HAS GANADO!", 0.015); //-0.50, 0.80
+			//TurnOffAlphaBlending();
+			ganaste->Draw(0, 0);
+
 		}
 
 		//vida->Draw(-0.86, -0.50);  //esquina inferior izq -0.86, -0.50   esquina inferior derecha 0.45, -0.50
