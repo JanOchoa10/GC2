@@ -95,6 +95,7 @@ public:
 	ModeloRR* bucket;
 	ModeloRR* heart;
 	ModeloRR* waterWell;
+	ModeloRR* stone;
 
 	ModeloRR* totem;
 	ModeloRR* totem2;
@@ -215,6 +216,7 @@ public:
 		bucket = new ModeloRR(d3dDevice, d3dContext, "Assets/Bucket/Bucket.obj", L"Assets/Bucket/Kova_A.png", L"Assets/Bucket/Kova_R.png", L"Assets/Bucket/Kova_N.png", -25, -150);
 		heart = new ModeloRR(d3dDevice, d3dContext, "Assets/Heart/nuevoHeart.obj", L"Assets/Heart/heartColor.png", L"Assets/Heart/heartMetallic.png", L"Assets/Heart/heartNormal.png", -25, -75);
 		waterWell = new ModeloRR(d3dDevice, d3dContext, "Assets/WaterWell/WaterWell.obj", L"Assets/WaterWell/Well_Base_Color.png", L"Assets/WaterWell/Well_Roughness.png", L"Assets/WaterWell/Well_Normal_DirectX.png", -125, 125);
+		stone = new ModeloRR(d3dDevice, d3dContext, "Assets/Stone/Stone.obj", L"Assets/Stone/StoneColor.jpg", L"Assets/Stone/StoneRough.jpg", L"Assets/Stone/StoneNormal.jpg", 125, -150);
 
 		totem = new ModeloRR(d3dDevice, d3dContext, "Assets/SkeletonCubeModel/SkeletonCube.obj", L"Assets/SkeletonCubeModel/Cube.jpg", L"Assets/SkeletonCubeModel/CubeRough.jpg", L"Assets/SkeletonCubeModel/CubeNormal.jpg", 150, -90);
 		totem2 = new ModeloRR(d3dDevice, d3dContext, "Assets/SkeletonCubeModel/SkeletonCube.obj", L"Assets/SkeletonCubeModel/Cube.jpg", L"Assets/SkeletonCubeModel/CubeRough.jpg", L"Assets/SkeletonCubeModel/CubeNormal.jpg", 90, -35);
@@ -514,6 +516,7 @@ public:
 		axe->Draw(camara->vista, camara->proyeccion, 175, terreno->Superficie(175, 115), 115, camara->posCam, 1.0f, 0, 'A', 2, camaraTipo, false);
 		heart->Draw(camara->vista, camara->proyeccion, -25, terreno->Superficie(-25, -75), -75, camara->posCam, 1.0f, 0, 'A', 2, camaraTipo, false);
 		waterWell->Draw(camara->vista, camara->proyeccion, -125, terreno->Superficie(-125, 125) - 3, 125, camara->posCam, 1.0f, 0, 'A', 3, camaraTipo, false);
+		stone->Draw(camara->vista, camara->proyeccion, 125, terreno->Superficie(125, -150), -150, camara->posCam, 10.0f, 0, 'A', 9.0, camaraTipo, false);
 
 		sandman->Draw(camara->vista, camara->proyeccion, 90, terreno->Superficie(sandman->getPosX(), sandman->getPosZ()), -90, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
 		sandman2->Draw(camara->vista, camara->proyeccion, 50, terreno->Superficie(sandman2->getPosX(), sandman2->getPosZ()), 100, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
