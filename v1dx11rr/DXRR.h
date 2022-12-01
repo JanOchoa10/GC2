@@ -78,7 +78,7 @@ public:
 
 	Camara *camara;
 	Tiempo* levelTime;
-	GUI* vida;
+	GUI* vida, * vida1, * vida2, * gameOver, * ganaste;
 	Text* texto;
 	Text* texto2;
 	bool fueraTotem, fueraTotem2, fueraTotem3, fueraTotem4, fueraTotem5 = true;
@@ -122,9 +122,14 @@ public:
 	bool camaraTipo;
 	float rotCam;
 
-	int vidas = 4;
+	int vidas = 3;
 	//bool effectDone;
 	float segundos;
+	bool entra = true, temporal = false;
+	bool entra2 = true, temporal2 = false;
+	bool SandmanV[5], SandmanVTemporal[5], SkeletonV[5], SkeletonVTemporal[5];
+
+	
 	
     DXRR(HWND hWnd, int Ancho, int Alto)
 	{
@@ -158,6 +163,22 @@ public:
 		IniciaD3D(hWnd);
 		izqder = 0;
 		arriaba = 0;
+
+		for (int i = 0; i < sizeof(SandmanV); i++) {
+			SandmanV[i] = true;
+		}
+
+		for (int i = 0; i < sizeof(SkeletonV); i++) {
+			SkeletonV[i] = true;
+		}
+
+		for (int i = 0; i < sizeof(SandmanVTemporal); i++) {
+			SandmanVTemporal[i] = false;
+		}
+
+		for (int i = 0; i < sizeof(SkeletonVTemporal); i++) {
+			SkeletonVTemporal[i] = false;
+		}
 
 		camara = new Camara(D3DXVECTOR3(0,80,10), D3DXVECTOR3(0,80,0), D3DXVECTOR3(0,1,0), Ancho, Alto);
 		//terreno = new TerrenoRR(500, 500, d3dDevice, d3dContext);  //Dos primeros números son la escala del terreno
@@ -207,10 +228,14 @@ public:
 
 		//vida
 		vida = new GUI(d3dDevice, d3dContext, 0.15, 0.26, L"Assets/UI/health_full.png");
+		vida1 = new GUI(d3dDevice, d3dContext, 0.15, 0.26, L"Assets/UI/health_1.png");
+		vida2 = new GUI(d3dDevice, d3dContext, 0.15, 0.26, L"Assets/UI/health_2.png");
 
 		//texto
 		texto = new Text(d3dDevice, d3dContext, 3.6, 1.2, L"Assets/UI/font.png", XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f));
 		texto2 = new Text(d3dDevice, d3dContext, 3.6, 1.2, L"Assets/UI/font.png", XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f));
+		gameOver = new GUI(d3dDevice, d3dContext, 1.00, 1.80, L"Assets/UI/game_overJan.png");
+		ganaste = new GUI(d3dDevice, d3dContext, 1.00, 1.80, L"Assets/UI/you_win.png");
 		
 	}
 
@@ -495,7 +520,7 @@ public:
 			TurnOffAlphaBlending();
 		}
 
-		vida->Draw(-0.86, -0.50);  //esquina inferior izq -0.86, -0.50   esquina inferior derecha 0.45, -0.50
+		//vida->Draw(-0.86, -0.50);  //esquina inferior izq -0.86, -0.50   esquina inferior derecha 0.45, -0.50
 
 		string totems = to_string(cantTotems);
 
@@ -532,46 +557,134 @@ public:
 
 			if (isPointInsideSphere(camara->getPos(), sandman->getSphere(radioSandman, sandman->getPosX(), sandman->getPosZ()))) {
 				camara->posCam = camara->pastCam;
-				bajarVida();
+				int x = 0;
+				if (SandmanV[x] && !SandmanVTemporal[x]) {
+					vidas--;
+				}
+				SandmanVTemporal[x] = SandmanV[x];
 			}
+			else { 
+				int x = 0; 
+				SandmanVTemporal[x] = false;
+			}
+
 			if (isPointInsideSphere(camara->getPos(), sandman2->getSphere(radioSandman, sandman2->getPosX(), sandman2->getPosZ()))) {
 				camara->posCam = camara->pastCam;
-				bajarVida();
+				int x = 1;
+				if (SandmanV[x] && !SandmanVTemporal[x]) {
+					vidas--;
+				}
+				SandmanVTemporal[x] = SandmanV[x];
 			}
+			else {
+				int x = 1;
+				SandmanVTemporal[x] = false;
+			}
+
 			if (isPointInsideSphere(camara->getPos(), sandman3->getSphere(radioSandman, sandman3->getPosX(), sandman3->getPosZ()))) {
 				camara->posCam = camara->pastCam;
-				bajarVida();
+				int x = 2;
+				if (SandmanV[x] && !SandmanVTemporal[x]) {
+					vidas--;
+				}
+				SandmanVTemporal[x] = SandmanV[x];
 			}
+			else {
+				int x = 2;
+				SandmanVTemporal[x] = false;
+			}
+
 			if (isPointInsideSphere(camara->getPos(), sandman4->getSphere(radioSandman, sandman4->getPosX(), sandman4->getPosZ()))) {
 				camara->posCam = camara->pastCam;
-				bajarVida();
+				int x = 3;
+				if (SandmanV[x] && !SandmanVTemporal[x]) {
+					vidas--;
+				}
+				SandmanVTemporal[x] = SandmanV[x];
 			}
+			else {
+				int x = 3;
+				SandmanVTemporal[x] = false;
+			}
+
 			if (isPointInsideSphere(camara->getPos(), sandman5->getSphere(radioSandman, sandman5->getPosX(), sandman5->getPosZ()))) {
 				camara->posCam = camara->pastCam;
-				bajarVida();
+				int x = 4;
+				if (SandmanV[x] && !SandmanVTemporal[x]) {
+					vidas--;
+				}
+				SandmanVTemporal[x] = SandmanV[x];
+			}
+			else {
+				int x = 4;
+				SandmanVTemporal[x] = false;
 			}
 
 			float radioSkeleton = 10;
 
 			if (isPointInsideSphere(camara->getPos(), skeleton->getSphere(radioSkeleton, skeleton->getPosX(), skeleton->getPosZ()))) {
 				camara->posCam = camara->pastCam;
-				bajarVida();
+				int x = 0;
+				if (SkeletonV[x] && !SkeletonVTemporal[x]) {
+					vidas--;
+				}
+				SkeletonVTemporal[x] = SkeletonV[x];
 			}
+			else {
+				int x = 0;
+				SkeletonVTemporal[x] = false;
+			}
+
 			if (isPointInsideSphere(camara->getPos(), skeleton2->getSphere(radioSkeleton, skeleton2->getPosX(), skeleton2->getPosZ()))) {
 				camara->posCam = camara->pastCam;
-				bajarVida();
+				int x = 1;
+				if (SkeletonV[x] && !SkeletonVTemporal[x]) {
+					vidas--;
+				}
+				SkeletonVTemporal[x] = SkeletonV[x];
 			}
+			else {
+				int x = 1;
+				SkeletonVTemporal[x] = false;
+			}
+
 			if (isPointInsideSphere(camara->getPos(), skeleton3->getSphere(radioSkeleton, skeleton3->getPosX(), skeleton3->getPosZ()))) {
 				camara->posCam = camara->pastCam;
-				bajarVida();
+				int x = 2;
+				if (SkeletonV[x] && !SkeletonVTemporal[x]) {
+					vidas--;
+				}
+				SkeletonVTemporal[x] = SkeletonV[x];
 			}
+			else {
+				int x = 2;
+				SkeletonVTemporal[x] = false;
+			}
+
 			if (isPointInsideSphere(camara->getPos(), skeleton4->getSphere(radioSkeleton, skeleton4->getPosX(), skeleton4->getPosZ()))) {
 				camara->posCam = camara->pastCam;
-				bajarVida();
+				int x = 3;
+				if (SkeletonV[x] && !SkeletonVTemporal[x]) {
+					vidas--;
+				}
+				SkeletonVTemporal[x] = SkeletonV[x];
 			}
+			else {
+				int x = 3;
+				SkeletonVTemporal[x] = false;
+			}
+
 			if (isPointInsideSphere(camara->getPos(), skeleton5->getSphere(radioSkeleton, skeleton5->getPosX(), skeleton5->getPosZ()))) {
 				camara->posCam = camara->pastCam;
-				bajarVida();
+				int x = 4;
+				if (SkeletonV[x] && !SkeletonVTemporal[x]) {
+					vidas--;
+				}
+				SkeletonVTemporal[x] = SkeletonV[x];
+			}
+			else {
+				int x = 4;
+				SkeletonVTemporal[x] = false;
 			}
 
 
@@ -621,6 +734,34 @@ public:
 		}
 	#pragma endregion
 
+		switch (vidas)
+		{
+			case 3: {
+				vida->Draw(-0.86, -0.50);
+			} break;
+
+			case 2: {
+				vida2->Draw(-0.86, -0.50);
+			} break;
+
+			case 1: {
+				vida1->Draw(-0.86, -0.50);
+			} break;
+
+			case 0: {
+				gameOver->Draw(0, 0);
+			} break;
+
+			default: {
+				gameOver->Draw(0, 0);
+			} break;
+		}
+
+		if (segundos < 0) {
+			gameOver->Draw(0, 0);
+		}
+
+
 		swapChain->Present( 1, 0 );
 	}
 
@@ -633,7 +774,7 @@ public:
 		if (distance < sphere[2])
 			collition = true;
 
-		if (distance > 15) {
+		if (distance > 5) {
 			haColisionado = false;
 		}
 		return collition;
@@ -868,25 +1009,7 @@ public:
 		skydome->Render(camara->posCam, contadorGLSL);
 		TurnOnDepth();
 	}
-
-	void bajarVida() {
-		if (vidas == 4) {
-			vida = new GUI(d3dDevice, d3dContext, 0.15, 0.26, L"Assets/UI/health_2.png");
-		}
-
-		if (vidas == 3) {
-			vida = new GUI(d3dDevice, d3dContext, 0.15, 0.26, L"Assets/UI/health_1.png");
-		}
-
-		if (vidas == 2) {
-			vida = new GUI(d3dDevice, d3dContext, 0.15, 0.26, L"Assets/UI/game_over.png");
-		}
-
-		if (!haColisionado) {
-			vidas = vidas - 1;
-			haColisionado = true;
-		}
-	}
-
+		
+			
 };
 #endif

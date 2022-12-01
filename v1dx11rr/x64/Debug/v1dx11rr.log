@@ -1,4 +1,4 @@
-﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(519,5): warning MSB8028: El directorio intermedio (x64\Debug\) contiene archivos compartidos de otro proyecto (Terreno.vcxproj, TerrenoSky.vcxproj). Esto puede dar lugar a un comportamiento incorrecto de limpieza y recompilación.
+﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(514,5): warning MSB8028: El directorio intermedio (x64\Debug\) contiene archivos compartidos de otro proyecto (Terreno.vcxproj, TerrenoSky.vcxproj). Esto puede dar lugar a un comportamiento incorrecto de limpieza y recompilación.
   TerrenoSkyBill.cpp
 C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\dxgitype.h(12,1): warning C4005: 'DXGI_STATUS_OCCLUDED': redefinición de macro
 C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\winerror.h(56388): message : vea la definición anterior de 'DXGI_STATUS_OCCLUDED'
@@ -56,18 +56,18 @@ C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\d3d10.h(608,1):
 C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\winerror.h(56841): message : vea la definición anterior de 'D3D10_ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS'
 C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\d3d10.h(609,1): warning C4005: 'D3D10_ERROR_FILE_NOT_FOUND': redefinición de macro
 C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\winerror.h(56850): message : vea la definición anterior de 'D3D10_ERROR_FILE_NOT_FOUND'
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\TerrenoRR.h(256,85): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\TerrenoRR.h(387,64): warning C4244: 'argumento': conversión de 'int' a 'FLOAT'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\TerrenoRR.h(387,1): warning C4305: 'argumento': truncamiento de 'double' a 'FLOAT'
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\TerrenoRR.h(399,1): warning C4305: '+=': truncamiento de 'double' a 'float'
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\TerrenoRR.h(439,1): warning C4305: 'argumento': truncamiento de 'double' a 'FLOAT'
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\TerrenoRR.h(655,22): warning C4018: '<': no coinciden signed/unsigned
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\TerrenoRR.h(657,23): warning C4018: '<': no coinciden signed/unsigned
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\Camara.h(68,63): warning C4244: 'argumento': conversión de 'int' a 'FLOAT'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\Camara.h(68,1): warning C4305: 'argumento': truncamiento de 'double' a 'FLOAT'
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\SkyDome.h(291,25): warning C4244: '=': conversión de 'int' a 'FLOAT'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\Billboard.h(721,14): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\Billboard.h(722,15): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\TerrenoRR.h(256,85): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\TerrenoRR.h(387,64): warning C4244: 'argumento': conversión de 'int' a 'FLOAT'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\TerrenoRR.h(387,1): warning C4305: 'argumento': truncamiento de 'double' a 'FLOAT'
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\TerrenoRR.h(399,1): warning C4305: '+=': truncamiento de 'double' a 'float'
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\TerrenoRR.h(439,1): warning C4305: 'argumento': truncamiento de 'double' a 'FLOAT'
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\TerrenoRR.h(655,22): warning C4018: '<': no coinciden signed/unsigned
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\TerrenoRR.h(657,23): warning C4018: '<': no coinciden signed/unsigned
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\Camara.h(68,63): warning C4244: 'argumento': conversión de 'int' a 'FLOAT'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\Camara.h(68,1): warning C4305: 'argumento': truncamiento de 'double' a 'FLOAT'
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\SkyDome.h(291,25): warning C4244: '=': conversión de 'int' a 'FLOAT'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\Billboard.h(721,14): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\Billboard.h(722,15): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
 C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xnamath.h(2662,52): warning C4838: la conversión de 'unsigned int' en 'INT' requiere una conversión de restricción
 C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xnamath.h(2662,64): warning C4838: la conversión de 'unsigned int' en 'INT' requiere una conversión de restricción
 C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xnamath.h(2662,76): warning C4838: la conversión de 'unsigned int' en 'INT' requiere una conversión de restricción
@@ -130,60 +130,63 @@ C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xnamathvector.i
 C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xnamathmisc.inl(518,43): warning C4838: la conversión de 'unsigned int' en 'INT' requiere una conversión de restricción
 C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xnamathmisc.inl(519,40): warning C4838: la conversión de 'unsigned int' en 'INT' requiere una conversión de restricción
 C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xnamathmisc.inl(519,51): warning C4838: la conversión de 'unsigned int' en 'INT' requiere una conversión de restricción
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\ModeloRR.h(336,64): warning C4244: 'argumento': conversión de 'int' a 'FLOAT'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\ModeloRR.h(336,1): warning C4305: 'argumento': truncamiento de 'double' a 'FLOAT'
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\ModeloRR.h(396,1): warning C4305: '+=': truncamiento de 'double' a 'float'
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\ModeloRR.h(457,44): warning C4244: 'argumento': conversión de 'double' a 'FLOAT'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\GUI.h(173,29): warning C4244: '=': conversión de 'float' a 'UINT'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\GUI.h(174,31): warning C4244: '=': conversión de 'float' a 'UINT'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\GUI.h(202,21): warning C4018: '<': no coinciden signed/unsigned
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\GUI.h(165,33): warning C4101: 'renderTargetViewDesc': variable local sin referencia
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\GUI.h(166,35): warning C4101: 'shaderResourceViewDesc': variable local sin referencia
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\GUI.h(300,1): warning C4305: 'argumento': truncamiento de 'double' a 'FLOAT'
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\Text.h(194,29): warning C4244: '=': conversión de 'float' a 'UINT'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\Text.h(195,31): warning C4244: '=': conversión de 'float' a 'UINT'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\Text.h(185,33): warning C4101: 'renderTargetViewDesc': variable local sin referencia
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\Text.h(186,35): warning C4101: 'shaderResourceViewDesc': variable local sin referencia
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\Text.h(323,1): warning C4305: 'argumento': truncamiento de 'double' a 'FLOAT'
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\Text.h(343,1): warning C4305: 'inicializando': truncamiento de 'double' a 'float'
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(209,1): warning C4305: 'argumento': truncamiento de 'double' a 'float'
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(212,1): warning C4305: 'argumento': truncamiento de 'double' a 'float'
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(213,1): warning C4305: 'argumento': truncamiento de 'double' a 'float'
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(402,1): warning C4305: '+=': truncamiento de 'double' a 'float'
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(453,1): warning C4305: '+=': truncamiento de 'double' a 'float'
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(494,1): warning C4305: 'argumento': truncamiento de 'double' a 'float'
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(498,1): warning C4305: 'argumento': truncamiento de 'double' a 'float'
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(503,1): warning C4305: 'argumento': truncamiento de 'double' a 'float'
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(505,59): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(505,1): warning C4305: 'argumento': truncamiento de 'double' a 'float'
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(508,1): warning C4305: '-=': truncamiento de 'double' a 'float'
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(759,24): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(760,24): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(761,24): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(762,24): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(770,28): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(771,28): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(772,28): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(773,28): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(782,29): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(783,29): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(784,29): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(785,29): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(794,29): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(795,29): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(796,29): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(797,29): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(858,44): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(860,44): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(874,1): warning C4305: 'argumento': truncamiento de 'double' a 'float'
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(878,1): warning C4305: 'argumento': truncamiento de 'double' a 'float'
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\DXRR.h(882,1): warning C4305: 'argumento': truncamiento de 'double' a 'float'
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\ModeloRR.h(336,64): warning C4244: 'argumento': conversión de 'int' a 'FLOAT'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\ModeloRR.h(336,1): warning C4305: 'argumento': truncamiento de 'double' a 'FLOAT'
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\ModeloRR.h(396,1): warning C4305: '+=': truncamiento de 'double' a 'float'
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\ModeloRR.h(457,44): warning C4244: 'argumento': conversión de 'double' a 'FLOAT'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\GUI.h(173,29): warning C4244: '=': conversión de 'float' a 'UINT'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\GUI.h(174,31): warning C4244: '=': conversión de 'float' a 'UINT'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\GUI.h(202,21): warning C4018: '<': no coinciden signed/unsigned
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\GUI.h(165,33): warning C4101: 'renderTargetViewDesc': variable local sin referencia
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\GUI.h(166,35): warning C4101: 'shaderResourceViewDesc': variable local sin referencia
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\GUI.h(300,1): warning C4305: 'argumento': truncamiento de 'double' a 'FLOAT'
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\Text.h(194,29): warning C4244: '=': conversión de 'float' a 'UINT'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\Text.h(195,31): warning C4244: '=': conversión de 'float' a 'UINT'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\Text.h(185,33): warning C4101: 'renderTargetViewDesc': variable local sin referencia
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\Text.h(186,35): warning C4101: 'shaderResourceViewDesc': variable local sin referencia
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\Text.h(323,1): warning C4305: 'argumento': truncamiento de 'double' a 'FLOAT'
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\Text.h(343,1): warning C4305: 'inicializando': truncamiento de 'double' a 'float'
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(230,1): warning C4305: 'argumento': truncamiento de 'double' a 'float'
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(231,1): warning C4305: 'argumento': truncamiento de 'double' a 'float'
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(232,1): warning C4305: 'argumento': truncamiento de 'double' a 'float'
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(235,1): warning C4305: 'argumento': truncamiento de 'double' a 'float'
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(236,1): warning C4305: 'argumento': truncamiento de 'double' a 'float'
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(237,1): warning C4305: 'argumento': truncamiento de 'double' a 'float'
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(238,1): warning C4305: 'argumento': truncamiento de 'double' a 'float'
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(427,1): warning C4305: '+=': truncamiento de 'double' a 'float'
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(478,1): warning C4305: '+=': truncamiento de 'double' a 'float'
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(519,1): warning C4305: 'argumento': truncamiento de 'double' a 'float'
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(528,1): warning C4305: 'argumento': truncamiento de 'double' a 'float'
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(530,59): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(530,1): warning C4305: 'argumento': truncamiento de 'double' a 'float'
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(533,1): warning C4305: '-=': truncamiento de 'double' a 'float'
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(740,1): warning C4305: 'argumento': truncamiento de 'double' a 'float'
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(744,1): warning C4305: 'argumento': truncamiento de 'double' a 'float'
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(748,1): warning C4305: 'argumento': truncamiento de 'double' a 'float'
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(900,24): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(901,24): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(902,24): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(903,24): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(911,28): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(912,28): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(913,28): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(914,28): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(923,29): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(924,29): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(925,29): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(926,29): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(935,29): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(936,29): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(937,29): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(938,29): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(999,44): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\DXRR.h(1001,44): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
   C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\TerrenoSkyBill.cpp(151,12): warning C4244: 'return': conversión de 'WPARAM' a 'int'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\TerrenoSkyBill.cpp(269,17): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\TerrenoSkyBill.cpp(273,57): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\TerrenoSkyBill.cpp(296,20): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\GUI.h(160): warning C4715: 'GUI::InitScene': no todas las rutas de acceso de control devuelven un valor
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\Text.h(180): warning C4715: 'Text::InitScene': no todas las rutas de acceso de control devuelven un valor
-C:\Users\Josué AMB\Documents\GitHub\GC2\v1dx11rr\TerrenoRR.h(500): warning C4715: 'TerrenoRR::clamp': no todas las rutas de acceso de control devuelven un valor
-  v1dx11rr.vcxproj -> C:\Users\Josué AMB\Documents\GitHub\GC2\x64\Debug\TerrenoSkyBill.exe
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\TerrenoSkyBill.cpp(151,12): warning C4244: 'return': conversión de 'WPARAM' a 'int'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\TerrenoSkyBill.cpp(269,17): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\TerrenoSkyBill.cpp(273,57): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\TerrenoSkyBill.cpp(296,20): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\GUI.h(160): warning C4715: 'GUI::InitScene': no todas las rutas de acceso de control devuelven un valor
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\Text.h(180): warning C4715: 'Text::InitScene': no todas las rutas de acceso de control devuelven un valor
+C:\Users\Jan\Documents\GitHub\gc2\v1dx11rr\TerrenoRR.h(500): warning C4715: 'TerrenoRR::clamp': no todas las rutas de acceso de control devuelven un valor
+  v1dx11rr.vcxproj -> C:\Users\Jan\Documents\GitHub\gc2\x64\Debug\TerrenoSkyBill.exe
