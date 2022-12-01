@@ -529,10 +529,10 @@ public:
 		 
         //specular //cambiar letra //escala
 
-		if (posicionSandmanVX <= 0) {
+		/*if (posicionSandmanVX <= 0) {
 			posicionSandmanVX += 0.1f;
 			sandman4->setPosX(posicionSandmanVX);
-		}
+		}*/
 
 		if (cantTotems >= 5) {
 			//TurnOnAlphaBlending();
