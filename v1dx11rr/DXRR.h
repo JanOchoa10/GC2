@@ -93,7 +93,7 @@ public:
 	ModeloRR* cheep;
 	ModeloRR* axe;
 	ModeloRR* bucket;
-	ModeloRR* heart;
+	ModeloRR* heart, *heart1, *heart2;
 	ModeloRR* waterWell;
 	ModeloRR* stone;
 
@@ -133,9 +133,24 @@ public:
 	float segundos;
 	bool entra = true, temporal = false;
 	bool entra2 = true, temporal2 = false;
-	bool SandmanV[5], SandmanVTemporal[5], SkeletonV[5], SkeletonVTemporal[5];
+	bool SandmanV[5], SandmanVTemporal[5], SkeletonV[5], SkeletonVTemporal[5], SkeletonLive[5], SandmanLive[5];
 	float posicionSandmanVX;
-	
+	bool tenemosHacha = false;
+	bool tenemosCubeta = false;
+	bool mostrarCubeta = false;
+	bool cubetaLlena = false;
+	bool mostrarPiedra = false;
+	bool mostarTotems = true;
+	bool mostrarSkeletons = false;
+	bool mostrarSandmans = false;
+	bool corazonActivado[3];
+	bool jugadorGano = false;
+	bool jugadorPerdio = false;
+	int tiemTardado = 0;
+
+	ModeloRR* stone;
+	/*int skeletonMuertos = 0;
+	int sandmanMuertos = 0;*/
 	
     DXRR(HWND hWnd, int Ancho, int Alto)
 	{
@@ -143,7 +158,7 @@ public:
 		ContFramesNoche = 40;
 		ContFramesTarde = 80;
 		contadorGLSL = 0;
-		segundos = 301;
+		segundos = 601;
 		fad = 0.8f;
 		fa = 0.8f;
 		fas = 0.5f;
@@ -186,6 +201,19 @@ public:
 			SkeletonVTemporal[i] = false;
 		}
 
+		for (int i = 0; i < sizeof(SkeletonLive); i++) {
+			SkeletonLive[i] = true;
+		}
+
+		for (int i = 0; i < sizeof(SandmanLive); i++) {
+			SandmanLive[i] = true;
+		}
+
+		for (int i = 0; i < sizeof(corazonActivado); i++) {
+			corazonActivado[i] = false;
+		}
+		corazonActivado[0] = true;
+
 		posicionSandmanVX = -125;
 
 		camara = new Camara(D3DXVECTOR3(0,80,10), D3DXVECTOR3(0,80,0), D3DXVECTOR3(0,1,0), Ancho, Alto);
@@ -215,6 +243,8 @@ public:
 		axe = new ModeloRR(d3dDevice, d3dContext, "Assets/Axe/Axe.obj", L"Assets/Axe/Axe_Color.png", L"Assets/Axe/Axe_Rough.png", L"Assets/Axe/Axe_Normal.png", 175, 115);
 		bucket = new ModeloRR(d3dDevice, d3dContext, "Assets/Bucket/Bucket.obj", L"Assets/Bucket/Kova_A.png", L"Assets/Bucket/Kova_R.png", L"Assets/Bucket/Kova_N.png", -25, -150);
 		heart = new ModeloRR(d3dDevice, d3dContext, "Assets/Heart/nuevoHeart.obj", L"Assets/Heart/heartColor.png", L"Assets/Heart/heartMetallic.png", L"Assets/Heart/heartNormal.png", -25, -75);
+		heart1 = new ModeloRR(d3dDevice, d3dContext, "Assets/Heart/nuevoHeart.obj", L"Assets/Heart/heartColor.png", L"Assets/Heart/heartMetallic.png", L"Assets/Heart/heartNormal.png", 25, -75);
+		heart2 = new ModeloRR(d3dDevice, d3dContext, "Assets/Heart/nuevoHeart.obj", L"Assets/Heart/heartColor.png", L"Assets/Heart/heartMetallic.png", L"Assets/Heart/heartNormal.png", -25, 75);
 		waterWell = new ModeloRR(d3dDevice, d3dContext, "Assets/WaterWell/WaterWell.obj", L"Assets/WaterWell/Well_Base_Color.png", L"Assets/WaterWell/Well_Roughness.png", L"Assets/WaterWell/Well_Normal_DirectX.png", -125, 125);
 		stone = new ModeloRR(d3dDevice, d3dContext, "Assets/Stone/Stone.obj", L"Assets/Stone/StoneColor.jpg", L"Assets/Stone/StoneRough.jpg", L"Assets/Stone/StoneNormal.jpg", 125, -150);
 
@@ -235,6 +265,8 @@ public:
 		skeleton3 = new ModeloRR(d3dDevice, d3dContext, "Assets/Skeleton/Skeleton.obj", L"Assets/Skeleton/SkeletonColor.png", L"Assets/Skeleton/lambert2_Height.png", L"Assets/Skeleton/SkeletonNormal.png", -25, 150);
 		skeleton4 = new ModeloRR(d3dDevice, d3dContext, "Assets/Skeleton/Skeleton.obj", L"Assets/Skeleton/SkeletonColor.png", L"Assets/Skeleton/lambert2_Height.png", L"Assets/Skeleton/SkeletonNormal.png", 100, 35);
 		skeleton5 = new ModeloRR(d3dDevice, d3dContext, "Assets/Skeleton/Skeleton.obj", L"Assets/Skeleton/SkeletonColor.png", L"Assets/Skeleton/lambert2_Height.png", L"Assets/Skeleton/SkeletonNormal.png", -25, -100);
+
+		stone = new ModeloRR(d3dDevice, d3dContext, "Assets/Stone/Stone.obj", L"Assets/Stone/StoneColor.jpg", L"Assets/Stone/StoneRough.jpg", L"Assets/Stone/StoneNormal.jpg", 50, 25);
 
 		camaraTipo = true;
 		rotCam = 0.0;
@@ -512,23 +544,19 @@ public:
 		vivienda->Draw(camara->vista, camara->proyeccion, 140, terreno->Superficie(140, 150), 150, camara->posCam, 10.0f, 0, 'A', 1, camaraTipo, false);
 		vivienda2->Draw(camara->vista, camara->proyeccion, -125, terreno->Superficie(-125, -75), -75, camara->posCam, 10.0f, 0, 'A', 1, camaraTipo, false);
 		//cheep->Draw(camara->vista, camara->proyeccion, 0, terreno->Superficie(0, -30), -30, camara->posCam, 1.0f, 0, 'A', 5.0, camaraTipo, false);
-		bucket->Draw(camara->vista, camara->proyeccion, -25, terreno->Superficie(-25, -150), -150, camara->posCam, 1.0f, 0, 'A', 2, camaraTipo, false);
-		axe->Draw(camara->vista, camara->proyeccion, 175, terreno->Superficie(175, 115), 115, camara->posCam, 1.0f, 0, 'A', 2, camaraTipo, false);
-		heart->Draw(camara->vista, camara->proyeccion, -25, terreno->Superficie(-25, -75), -75, camara->posCam, 1.0f, 0, 'A', 2, camaraTipo, false);
+		
+		
+		
 		waterWell->Draw(camara->vista, camara->proyeccion, -125, terreno->Superficie(-125, 125) - 3, 125, camara->posCam, 1.0f, 0, 'A', 3, camaraTipo, false);
 		stone->Draw(camara->vista, camara->proyeccion, 125, terreno->Superficie(125, -150), -150, camara->posCam, 10.0f, 0, 'A', 9.0, camaraTipo, false);
 
-		sandman->Draw(camara->vista, camara->proyeccion, 90, terreno->Superficie(sandman->getPosX(), sandman->getPosZ()), -90, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
-		sandman2->Draw(camara->vista, camara->proyeccion, 50, terreno->Superficie(sandman2->getPosX(), sandman2->getPosZ()), 100, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
-		sandman3->Draw(camara->vista, camara->proyeccion, 175, terreno->Superficie(sandman3->getPosX(), sandman3->getPosZ()), 50, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
-		sandman4->Draw(camara->vista, camara->proyeccion, sandman4->getPosX(), terreno->Superficie(sandman4->getPosX(), sandman4->getPosZ()), 50, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
-		sandman5->Draw(camara->vista, camara->proyeccion, 50, terreno->Superficie(sandman5->getPosX(), sandman5->getPosZ()), 0, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+		
+		
 
-		skeleton->Draw(camara->vista, camara->proyeccion, 140, terreno->Superficie(skeleton->getPosX(), skeleton->getPosZ()), 115, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
-		skeleton2->Draw(camara->vista, camara->proyeccion, 175, terreno->Superficie(skeleton2->getPosX(), skeleton2->getPosZ()), -25, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
-		skeleton3->Draw(camara->vista, camara->proyeccion, -25, terreno->Superficie(skeleton3->getPosX(), skeleton3->getPosZ()), 150, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
-		skeleton4->Draw(camara->vista, camara->proyeccion, 100, terreno->Superficie(skeleton4->getPosX(), skeleton4->getPosZ()), 35, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
-		skeleton5->Draw(camara->vista, camara->proyeccion, -25, terreno->Superficie(skeleton5->getPosX(), skeleton5->getPosZ()), -100, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+		
+		
+		
+		
 		 
         //specular //cambiar letra //escala
 
@@ -537,22 +565,132 @@ public:
 			sandman4->setPosX(posicionSandmanVX);
 		}*/
 
-		if (cantTotems >= 5) {
-			//TurnOnAlphaBlending();
-			//texto2->DrawTextW(-0.50, 0.80, "HAS GANADO!", 0.015); //-0.50, 0.80
-			//TurnOffAlphaBlending();
-			ganaste->Draw(0, 0);
+		if (cantTotems < 5 && !tenemosHacha) {
+			TurnOnAlphaBlending();
+			texto2->DrawTextW(-0.50, 0.80, "Objetivo: Recoge todos los totems.", 0.015); //-0.50, 0.80
+			TurnOffAlphaBlending();
+			//axe->Draw(camara->vista, camara->proyeccion, 175, terreno->Superficie(175, 115), 115, camara->posCam, 1.0f, 0, 'A', 2, camaraTipo, false);
+			//ganaste->Draw(0, 0);
 
 		}
+
+		if (cantTotems == 5 && !tenemosHacha) {
+			TurnOnAlphaBlending();
+			texto2->DrawTextW(-0.50, 0.80, "Objetivo: Busca y recoge el hacha.", 0.015); //-0.50, 0.80
+			TurnOffAlphaBlending();
+			axe->Draw(camara->vista, camara->proyeccion, 175, terreno->Superficie(175, 115), 115, camara->posCam, 1.0f, 0, 'A', 2, camaraTipo, false);
+			//ganaste->Draw(0, 0);
+
+		}
+
+		int skeletonVivos = 0, sandmansVivos = 0;
+
+		for (int i = 0; i < sizeof(SkeletonLive); i++) {
+			if (SkeletonLive[i] == true) {
+				skeletonVivos++;
+			}
+		}
+
+		for (int i = 0; i < sizeof(SandmanLive); i++) {
+			if (SandmanLive[i] == true) {
+				sandmansVivos++;
+			}
+		}
+
+		int contadorDeEsqueletosMuertos = 0;
+		for (int i = 0; i < sizeof(SkeletonLive); i++) {
+			if (SkeletonLive[i] == true) {
+				break;
+				/*skeletonVivos++;*/
+			} 
+			
+			contadorDeEsqueletosMuertos++;
+			if (contadorDeEsqueletosMuertos == 5) {
+				mostrarCubeta = true;
+			}
+		}
+
+		int contadorDeSandmansMuertos = 0;
+		for (int i = 0; i < sizeof(SandmanLive); i++) {
+			if (SandmanLive[i] == true) {
+				break;
+				//sandmansVivos++;
+			}
+
+			contadorDeSandmansMuertos++;
+			if (contadorDeSandmansMuertos == 5) {
+				mostrarPiedra = true;
+			}
+		}
+
+
+		if (mostrarCubeta && !tenemosCubeta) {
+			//tenemosHacha = false;
+			texto2->DrawTextW(-0.50, 0.80, "Objetivo: Recoge la cubeta.", 0.015); //-0.50, 0.80
+			bucket->Draw(camara->vista, camara->proyeccion, -25, terreno->Superficie(-25, -150), -150, camara->posCam, 1.0f, 0, 'A', 2, camaraTipo, false);
+		}
+
+		if (tenemosCubeta && !cubetaLlena && !mostrarPiedra) {
+			texto2->DrawTextW(-0.50, 0.80, "Objetivo: Llena la cubeta.", 0.015); //-0.50, 0.80
+			texto->DrawTextW(-0.95, 0.70, "Inventario:  Cubeta vacia.", 0.015);
+		}
+
+		if (tenemosCubeta && cubetaLlena) {
+			texto2->DrawTextW(-0.50, 0.80, "Objetivo: Elimina a los sandmans.", 0.015); //-0.50, 0.80
+			texto->DrawTextW(-0.95, 0.70, "Inventario:  Cubeta llena.", 0.015);
+		}
+
+		if (mostrarPiedra && !jugadorGano) {
+			texto2->DrawTextW(-0.50, 0.80, "Objetivo: Dirigete a la piedra antigua.", 0.015); //-0.50, 0.80
+			stone->Draw(camara->vista, camara->proyeccion, stone->getPosX(), terreno->Superficie(stone->getPosX(), stone->getPosZ()) - 20, stone->getPosZ(), camara->posCam, 10.0f, 0, 'A', 9.0, camaraTipo, false);
+			mostrarSandmans = false;
+
+		}
+
+		
+
 
 		//vida->Draw(-0.86, -0.50);  //esquina inferior izq -0.86, -0.50   esquina inferior derecha 0.45, -0.50
 
 		string totems = to_string(cantTotems);
+		string skeletonVivosS = to_string(skeletonVivos);
+		string sandmansVivosS = to_string(sandmansVivos);
 
 		TurnOnAlphaBlending();
-		texto->DrawTextW(-0.95, 0.80, "Totems:   "  + totems, 0.015); // esquina sup izq -0.50, 0.80   inf derecha  -0.95, -0.40
 
-		texto->DrawTextW(-0.95, 0.90, "Tiempo:  " + texto->Time(segundos), 0.015);  // esquina sup izq -0.95, 0.90  inf derecha  -0.95, -0.50
+		if (mostarTotems) {
+			texto->DrawTextW(-0.95, 0.80, "Totems:   " + totems + ".", 0.015); // esquina sup izq -0.50, 0.80   inf derecha  -0.95, -0.40
+		}
+
+		if (mostrarSkeletons) {
+			texto->DrawTextW(-0.95, 0.80, "Skeletons:   " + skeletonVivosS + ".", 0.015); // esquina sup izq -0.50, 0.80   inf derecha  -0.95, -0.40
+		}
+
+		if (mostrarSandmans) {
+			texto->DrawTextW(-0.95, 0.80, "Sandmans:   " + sandmansVivosS + ".", 0.015); // esquina sup izq -0.50, 0.80   inf derecha  -0.95, -0.40
+		}
+
+		if (!jugadorPerdio && !jugadorGano) {
+			texto->DrawTextW(-0.95, 0.90, "Tiempo:  " + texto->Time(segundos), 0.015);  // esquina sup izq -0.95, 0.90  inf derecha  -0.95, -0.50
+		}
+
+		if (tenemosHacha && !mostrarCubeta) {
+			texto->DrawTextW(-0.95, 0.70, "Inventario:  Hacha.", 0.015);
+			texto2->DrawTextW(-0.50, 0.80, "Objetivo: Elimina a los esqueletos.", 0.015); //-0.50, 0.80
+		}
+
+		
+		if (!jugadorGano) {
+			tiemTardado = 601 - segundos;
+		}
+		//string tiempoS = to_string(tiemTardado);
+
+		if (jugadorGano) {
+
+			texto2->DrawTextW(-0.50, 0.80, "Tiempo jugado: " + texto->Time(tiemTardado) + ".", 0.015); //-0.50, 0.80
+		}
+
+
 		TurnOffAlphaBlending();
 
 		segundos -= 0.02;
@@ -578,138 +716,215 @@ public:
 				camara->posCam = camara->pastCam;
 			}
 
+			int x = 0;
+
 			float radioSandman = 10;
 
-			if (isPointInsideSphere(camara->getPos(), sandman->getSphere(radioSandman, sandman->getPosX(), sandman->getPosZ()))) {
-				camara->posCam = camara->pastCam;
-				int x = 0;
-				if (SandmanV[x] && !SandmanVTemporal[x]) {
-					vidas--;
+			x = 0;
+			if (SandmanLive[x]) {
+				sandman->Draw(camara->vista, camara->proyeccion, 90, terreno->Superficie(sandman->getPosX(), sandman->getPosZ()), -90, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+				if (isPointInsideSphere(camara->getPos(), sandman->getSphere(radioSandman, sandman->getPosX(), sandman->getPosZ()))) {
+					camara->posCam = camara->pastCam;
+					if (!cubetaLlena) {
+						if (SandmanV[x] && !SandmanVTemporal[x]) {
+							vidas--;
+						}
+						SandmanVTemporal[x] = SandmanV[x];
+					}
+					else {
+						SandmanLive[x] = false;
+						cubetaLlena = false;
+					}
 				}
-				SandmanVTemporal[x] = SandmanV[x];
-			}
-			else { 
-				int x = 0; 
-				SandmanVTemporal[x] = false;
+				else {
+					SandmanVTemporal[x] = false;
+				}
 			}
 
-			if (isPointInsideSphere(camara->getPos(), sandman2->getSphere(radioSandman, sandman2->getPosX(), sandman2->getPosZ()))) {
-				camara->posCam = camara->pastCam;
-				int x = 1;
-				if (SandmanV[x] && !SandmanVTemporal[x]) {
-					vidas--;
+			x = 1;
+			if (SandmanLive[x]) {
+				sandman2->Draw(camara->vista, camara->proyeccion, 50, terreno->Superficie(sandman2->getPosX(), sandman2->getPosZ()), 100, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+				if (isPointInsideSphere(camara->getPos(), sandman2->getSphere(radioSandman, sandman2->getPosX(), sandman2->getPosZ()))) {
+					camara->posCam = camara->pastCam;
+					if (!cubetaLlena) {
+						if (SandmanV[x] && !SandmanVTemporal[x]) {
+							vidas--;
+						}
+						SandmanVTemporal[x] = SandmanV[x];
+					}
+					else {
+						SandmanLive[x] = false;
+						cubetaLlena = false;
+					}
 				}
-				SandmanVTemporal[x] = SandmanV[x];
-			}
-			else {
-				int x = 1;
-				SandmanVTemporal[x] = false;
+				else {
+					SandmanVTemporal[x] = false;
+				}
 			}
 
-			if (isPointInsideSphere(camara->getPos(), sandman3->getSphere(radioSandman, sandman3->getPosX(), sandman3->getPosZ()))) {
-				camara->posCam = camara->pastCam;
-				int x = 2;
-				if (SandmanV[x] && !SandmanVTemporal[x]) {
-					vidas--;
+			x = 2;
+			if (SandmanLive[x]) {
+				sandman3->Draw(camara->vista, camara->proyeccion, 175, terreno->Superficie(sandman3->getPosX(), sandman3->getPosZ()), 50, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+				if (isPointInsideSphere(camara->getPos(), sandman3->getSphere(radioSandman, sandman3->getPosX(), sandman3->getPosZ()))) {
+					camara->posCam = camara->pastCam;
+					if (!cubetaLlena) {
+						if (SandmanV[x] && !SandmanVTemporal[x]) {
+							vidas--;
+						}
+						SandmanVTemporal[x] = SandmanV[x];
+					}
+					else {
+						SandmanLive[x] = false;
+						cubetaLlena = false;
+					}
 				}
-				SandmanVTemporal[x] = SandmanV[x];
-			}
-			else {
-				int x = 2;
-				SandmanVTemporal[x] = false;
+				else {
+					SandmanVTemporal[x] = false;
+				}
 			}
 
-			if (isPointInsideSphere(camara->getPos(), sandman4->getSphere(radioSandman, sandman4->getPosX(), sandman4->getPosZ()))) {
-				camara->posCam = camara->pastCam;
-				int x = 3;
-				if (SandmanV[x] && !SandmanVTemporal[x]) {
-					vidas--;
+			x = 3;
+			if (SandmanLive[x]) {
+				sandman4->Draw(camara->vista, camara->proyeccion, sandman4->getPosX(), terreno->Superficie(sandman4->getPosX(), sandman4->getPosZ()), 50, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+				if (isPointInsideSphere(camara->getPos(), sandman4->getSphere(radioSandman, sandman4->getPosX(), sandman4->getPosZ()))) {
+					camara->posCam = camara->pastCam;
+					if (!cubetaLlena) {
+						if (SandmanV[x] && !SandmanVTemporal[x]) {
+							vidas--;
+						}
+						SandmanVTemporal[x] = SandmanV[x];
+					}
+					else {
+						SandmanLive[x] = false;
+						cubetaLlena = false;
+					}
 				}
-				SandmanVTemporal[x] = SandmanV[x];
-			}
-			else {
-				int x = 3;
-				SandmanVTemporal[x] = false;
+				else {
+					SandmanVTemporal[x] = false;
+				}
 			}
 
-			if (isPointInsideSphere(camara->getPos(), sandman5->getSphere(radioSandman, sandman5->getPosX(), sandman5->getPosZ()))) {
-				camara->posCam = camara->pastCam;
-				int x = 4;
-				if (SandmanV[x] && !SandmanVTemporal[x]) {
-					vidas--;
+			x = 4;
+			if (SandmanLive[x]) {
+				sandman5->Draw(camara->vista, camara->proyeccion, 50, terreno->Superficie(sandman5->getPosX(), sandman5->getPosZ()), 0, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+				if (isPointInsideSphere(camara->getPos(), sandman5->getSphere(radioSandman, sandman5->getPosX(), sandman5->getPosZ()))) {
+					camara->posCam = camara->pastCam;
+					if (!cubetaLlena) {
+						if (SandmanV[x] && !SandmanVTemporal[x]) {
+							vidas--;
+						}
+						SandmanVTemporal[x] = SandmanV[x];
+					}
+					else {
+						SandmanLive[x] = false;
+						cubetaLlena = false;
+					}
 				}
-				SandmanVTemporal[x] = SandmanV[x];
-			}
-			else {
-				int x = 4;
-				SandmanVTemporal[x] = false;
+				else {
+					SandmanVTemporal[x] = false;
+				}
 			}
 
 			float radioSkeleton = 10;
 
-			if (isPointInsideSphere(camara->getPos(), skeleton->getSphere(radioSkeleton, skeleton->getPosX(), skeleton->getPosZ()))) {
-				camara->posCam = camara->pastCam;
-				int x = 0;
-				if (SkeletonV[x] && !SkeletonVTemporal[x]) {
-					vidas--;
+			x = 0;
+			if (SkeletonLive[x]) {
+				skeleton->Draw(camara->vista, camara->proyeccion, 140, terreno->Superficie(skeleton->getPosX(), skeleton->getPosZ()), 115, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+				if (isPointInsideSphere(camara->getPos(), skeleton->getSphere(radioSkeleton, skeleton->getPosX(), skeleton->getPosZ()))) {
+					camara->posCam = camara->pastCam;
+
+					if (!tenemosHacha) {
+						if (SkeletonV[x] && !SkeletonVTemporal[x]) {
+							vidas--;
+						}
+						SkeletonVTemporal[x] = SkeletonV[x];
+					}
+					else {
+						SkeletonLive[x] = false;
+					}
 				}
-				SkeletonVTemporal[x] = SkeletonV[x];
+				else {
+					SkeletonVTemporal[x] = false;
+				}
 			}
-			else {
-				int x = 0;
-				SkeletonVTemporal[x] = false;
+			x = 1;
+			if (SkeletonLive[x]) {
+				skeleton2->Draw(camara->vista, camara->proyeccion, 175, terreno->Superficie(skeleton2->getPosX(), skeleton2->getPosZ()), -25, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+				if (isPointInsideSphere(camara->getPos(), skeleton2->getSphere(radioSkeleton, skeleton2->getPosX(), skeleton2->getPosZ()))) {
+					camara->posCam = camara->pastCam;
+					if (!tenemosHacha) {
+						if (SkeletonV[x] && !SkeletonVTemporal[x]) {
+							vidas--;
+						}
+						SkeletonVTemporal[x] = SkeletonV[x];
+					}
+					else {
+						SkeletonLive[x] = false;
+					}
+				}
+				else {
+					SkeletonVTemporal[x] = false;
+				}
 			}
 
-			if (isPointInsideSphere(camara->getPos(), skeleton2->getSphere(radioSkeleton, skeleton2->getPosX(), skeleton2->getPosZ()))) {
-				camara->posCam = camara->pastCam;
-				int x = 1;
-				if (SkeletonV[x] && !SkeletonVTemporal[x]) {
-					vidas--;
+			x = 2;
+			if (SkeletonLive[x]) {
+				skeleton3->Draw(camara->vista, camara->proyeccion, -25, terreno->Superficie(skeleton3->getPosX(), skeleton3->getPosZ()), 150, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+				if (isPointInsideSphere(camara->getPos(), skeleton3->getSphere(radioSkeleton, skeleton3->getPosX(), skeleton3->getPosZ()))) {
+					camara->posCam = camara->pastCam;
+					if (!tenemosHacha) {
+						if (SkeletonV[x] && !SkeletonVTemporal[x]) {
+							vidas--;
+						}
+						SkeletonVTemporal[x] = SkeletonV[x];
+					}
+					else {
+						SkeletonLive[x] = false;
+					}
 				}
-				SkeletonVTemporal[x] = SkeletonV[x];
-			}
-			else {
-				int x = 1;
-				SkeletonVTemporal[x] = false;
+				else {
+					SkeletonVTemporal[x] = false;
+				}
 			}
 
-			if (isPointInsideSphere(camara->getPos(), skeleton3->getSphere(radioSkeleton, skeleton3->getPosX(), skeleton3->getPosZ()))) {
-				camara->posCam = camara->pastCam;
-				int x = 2;
-				if (SkeletonV[x] && !SkeletonVTemporal[x]) {
-					vidas--;
+			x = 3;
+			if (SkeletonLive[x]) {
+				skeleton4->Draw(camara->vista, camara->proyeccion, 100, terreno->Superficie(skeleton4->getPosX(), skeleton4->getPosZ()), 35, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+				if (isPointInsideSphere(camara->getPos(), skeleton4->getSphere(radioSkeleton, skeleton4->getPosX(), skeleton4->getPosZ()))) {
+					camara->posCam = camara->pastCam;
+					if (!tenemosHacha) {
+						if (SkeletonV[x] && !SkeletonVTemporal[x]) {
+							vidas--;
+						}
+						SkeletonVTemporal[x] = SkeletonV[x];
+					}
+					else {
+						SkeletonLive[x] = false;
+					}
 				}
-				SkeletonVTemporal[x] = SkeletonV[x];
-			}
-			else {
-				int x = 2;
-				SkeletonVTemporal[x] = false;
+				else {
+					SkeletonVTemporal[x] = false;
+				}
 			}
 
-			if (isPointInsideSphere(camara->getPos(), skeleton4->getSphere(radioSkeleton, skeleton4->getPosX(), skeleton4->getPosZ()))) {
-				camara->posCam = camara->pastCam;
-				int x = 3;
-				if (SkeletonV[x] && !SkeletonVTemporal[x]) {
-					vidas--;
+			x = 4;
+			if (SkeletonLive[x]) {
+				skeleton5->Draw(camara->vista, camara->proyeccion, -25, terreno->Superficie(skeleton5->getPosX(), skeleton5->getPosZ()), -100, camara->posCam, 1.0f, 0, 'A', 1, camaraTipo, false);
+				if (isPointInsideSphere(camara->getPos(), skeleton5->getSphere(radioSkeleton, skeleton5->getPosX(), skeleton5->getPosZ()))) {
+					camara->posCam = camara->pastCam;
+					if (!tenemosHacha) {
+						if (SkeletonV[x] && !SkeletonVTemporal[x]) {
+							vidas--;
+						}
+						SkeletonVTemporal[x] = SkeletonV[x];
+					}
+					else {
+						SkeletonLive[x] = false;
+					}
 				}
-				SkeletonVTemporal[x] = SkeletonV[x];
-			}
-			else {
-				int x = 3;
-				SkeletonVTemporal[x] = false;
-			}
-
-			if (isPointInsideSphere(camara->getPos(), skeleton5->getSphere(radioSkeleton, skeleton5->getPosX(), skeleton5->getPosZ()))) {
-				camara->posCam = camara->pastCam;
-				int x = 4;
-				if (SkeletonV[x] && !SkeletonVTemporal[x]) {
-					vidas--;
+				else {
+					SkeletonVTemporal[x] = false;
 				}
-				SkeletonVTemporal[x] = SkeletonV[x];
-			}
-			else {
-				int x = 4;
-				SkeletonVTemporal[x] = false;
 			}
 
 
@@ -756,6 +971,99 @@ public:
 					fueraTotem5 = false;
 				}
 			}
+
+			// Colisión con hacha
+			float radioHacha = 5;
+			if (cantTotems == 5 && !tenemosHacha) {
+				if (isPointInsideSphere(camara->getPos(), axe->getSphere(radioHacha, axe->getPosX(), axe->getPosZ()))) {
+					camara->posCam = camara->pastCam;
+					tenemosHacha = true;
+					mostarTotems = false;
+					mostrarSkeletons = true;
+					corazonActivado[1] = true;
+				}
+			}
+
+			// Colisión con cubeta
+			float radioCubeta = 5;
+			if (!tenemosCubeta && mostrarCubeta) {
+				if (isPointInsideSphere(camara->getPos(), bucket->getSphere(radioCubeta, bucket->getPosX(), bucket->getPosZ()))) {
+					camara->posCam = camara->pastCam;
+					tenemosCubeta = true;
+					mostrarCubeta = false;
+					mostrarSkeletons = false;
+					mostrarSandmans = true;
+					corazonActivado[2] = true;
+				}
+			}
+
+			// Colisión con cubeta
+			float radioPozo = 18;
+			if (tenemosCubeta && !cubetaLlena) {
+				if (isPointInsideSphere(camara->getPos(), waterWell->getSphere(radioPozo, waterWell->getPosX(), waterWell->getPosZ()))) {
+					camara->posCam = camara->pastCam;
+					cubetaLlena = true;
+				}
+			}
+
+			// Colisión con la piedra antigua
+			float radioPiedra = 25;
+			if (mostrarPiedra) {
+				if (isPointInsideSphere(camara->getPos(), stone->getSphere(radioPiedra, stone->getPosX(), stone->getPosZ()))) {
+					camara->posCam = camara->pastCam;
+					//cubetaLlena = true;
+					jugadorGano = true;
+				}
+			}
+
+			// Colisión con el corazón
+			float radioCorazon = 5;
+			x = 0;
+			if (corazonActivado[x]) {
+				heart->Draw(camara->vista, camara->proyeccion, heart->getPosX(), terreno->Superficie(heart->getPosX(), heart->getPosZ()), heart->getPosZ(), camara->posCam, 1.0f, 0, 'A', 2, camaraTipo, false);
+				if (isPointInsideSphere(camara->getPos(), heart->getSphere(radioCorazon, heart->getPosX(), heart->getPosZ()))) {
+					camara->posCam = camara->pastCam;
+					//cubetaLlena = true;
+					/*ganaste->Draw(0, 0);*/
+					if (vidas > 0 && vidas < 3) {
+						vidas++;
+						corazonActivado[x] = false;
+					}
+					
+				}
+			}
+
+			x = 1;
+			if (corazonActivado[x]) {
+				heart1->Draw(camara->vista, camara->proyeccion, heart1->getPosX(), terreno->Superficie(heart1->getPosX(), heart1->getPosZ()), heart1->getPosZ(), camara->posCam, 1.0f, 0, 'A', 2, camaraTipo, false);
+				if (isPointInsideSphere(camara->getPos(), heart1->getSphere(radioCorazon, heart1->getPosX(), heart1->getPosZ()))) {
+					camara->posCam = camara->pastCam;
+					//cubetaLlena = true;
+					/*ganaste->Draw(0, 0);*/
+					if (vidas > 0 && vidas < 3) {
+						vidas++;
+						corazonActivado[x] = false;
+					}
+
+				}
+			}
+
+			x = 2;
+			if (corazonActivado[x]) {
+				heart2->Draw(camara->vista, camara->proyeccion, heart2->getPosX(), terreno->Superficie(heart2->getPosX(), heart2->getPosZ()), heart2->getPosZ(), camara->posCam, 1.0f, 0, 'A', 2, camaraTipo, false);
+				if (isPointInsideSphere(camara->getPos(), heart2->getSphere(radioCorazon, heart2->getPosX(), heart2->getPosZ()))) {
+					camara->posCam = camara->pastCam;
+					//cubetaLlena = true;
+					/*ganaste->Draw(0, 0);*/
+					if (vidas > 0 && vidas < 3) {
+						vidas++;
+						corazonActivado[x] = false;
+					}
+
+				}
+			}
+
+
 		}
 	#pragma endregion
 
@@ -775,15 +1083,22 @@ public:
 
 			case 0: {
 				gameOver->Draw(0, 0);
+				jugadorPerdio = true;
 			} break;
 
 			default: {
 				gameOver->Draw(0, 0);
+				jugadorPerdio = true;
 			} break;
 		}
 
 		if (segundos < 0) {
 			gameOver->Draw(0, 0);
+			jugadorPerdio = true;
+		}
+
+		if (jugadorGano) {
+			ganaste->Draw(0, 0);
 		}
 
 
