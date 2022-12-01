@@ -2,24 +2,24 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>C:\Users\Jan\Documents\GitHub\gc2\x64\Debug\TerrenoSkyBill.exe</FullPath>
+      <FullPath>C:\Users\Josué AMB\Documents\GitHub\GC2\x64\Debug\TerrenoSkyBill.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles>
     <ContentFile>
-      <FullPath>C:\Users\Jan\Documents\GitHub\gc2\x64\Debug\Billboard.cso</FullPath>
+      <FullPath>C:\Users\Josué AMB\Documents\GitHub\GC2\x64\Debug\Billboard.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\Users\Jan\Documents\GitHub\gc2\x64\Debug\GUI.cso</FullPath>
+      <FullPath>C:\Users\Josué AMB\Documents\GitHub\GC2\x64\Debug\GUI.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\Users\Jan\Documents\GitHub\gc2\x64\Debug\Modelo.cso</FullPath>
+      <FullPath>C:\Users\Josué AMB\Documents\GitHub\GC2\x64\Debug\Modelo.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\Users\Jan\Documents\GitHub\gc2\x64\Debug\Text.cso</FullPath>
+      <FullPath>C:\Users\Josué AMB\Documents\GitHub\GC2\x64\Debug\Text.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\Users\Jan\Documents\GitHub\gc2\x64\Debug\Water.cso</FullPath>
+      <FullPath>C:\Users\Josué AMB\Documents\GitHub\GC2\x64\Debug\Water.cso</FullPath>
     </ContentFile>
   </ContentFiles>
   <SatelliteDlls />
