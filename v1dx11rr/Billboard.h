@@ -101,7 +101,7 @@ public:
 		float escal = escala;
 		frontal = D3DXVECTOR3(0, 0, 1);
 		//aqui cargamos las texturas de alturas y el cesped
-		CargaParametrosWater(billb, normal, 50, 50);
+		CargaParametrosWater(billb, normal, 58, 58);
 	}
 
 	~BillboardRR()
@@ -339,6 +339,14 @@ public:
 			return false;
 		}
 		return true;
+	}
+
+	float getPosX() {
+		return this->posx;
+	}
+
+	float getPosZ() {
+		return this->posz;
 	}
 
 	bool CargaParametros(WCHAR* billb, WCHAR* normal, float escala)

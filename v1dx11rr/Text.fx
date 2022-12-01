@@ -36,12 +36,12 @@ PS_Input VS_Main(VS_Input vertex)
 float4 PS_Main(PS_Input vertex) : SV_TARGET
 {
     float4 textura = colorMap.Sample(colorSampler, vertex.uv);
+    float4 negro = float4(0.8f, 0.8f, 0.8f, 0.8f);
+    if (all(textura > negro))
+    {
+        clip(textura.a - 1.5);
+
+    }
     
-    //float4 negro = float4(0.8f, 0.8f, 0.8f, 0.8f);
-    //if (all(textura > negro))  //si no son negros, no los dibujes
-    //{
-    //    clip(textura.a - 1.5);
-    //}
-    
-    return textura;
+    return color;
 }
